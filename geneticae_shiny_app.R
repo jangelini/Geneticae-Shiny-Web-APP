@@ -15,6 +15,7 @@ rm(list=ls(all=TRUE))
 library(shiny)
 library(ggplot2)
 library(tidyr)
+library(car)
 # library(corrplot)
 library(shinythemes)
 library(DT)
@@ -492,15 +493,15 @@ tabPanel("Analysis of variance",
                            tags$p("Nowadays, computer programs have become a basic tool for data analysis. Currently, R is one of the most used programs due to
                                 its power and free distribution. This software consists of a large number of packages which can perform different types of analysis.
                                 In particular, geneticae package was developed by our group and offers functions for METs analysis. However, R has a complex syntax, and therefore is not friendly
-                                for those who do not know the R programming language. Frequently, breeders use programs with graphical user interface
-                                to perform statistical analysis but not all of them allow all the analyzes of interest to be carried out and therefore, several must be used to fulfill an objective.
-                                This generates the need to have different programs to perform different analyzes, to know the data formats required by each one and to understand the different types
+                                for those who do not know R programming language. Frequently, breeders use programs with graphical user interface
+                                to perform statistical analysis, but not all of them allow all the analyzes of interest to be carried out and therefore, several of them must be used to fulfill an objective.
+                                This generates the need to have different programs to perform a complete analysis, to know the data formats required by each one and to understand the different types
                                   of results that they generate.", align = "justify"),
                             tags$p("The objective of Geneticae APP is to create a graphical interface of geneticae package, removing the obstacle of R programming language complexity.", align = "justify")
                         ), tags$br(),
                         tags$h4(strong("About Geneticae APP")),
                         tags$div(
-                            tags$p("Geneticae APP is a statistical Shiny Web APP for phenotypic analyses in the plant breeding context, developed by Julia Angelini, Marcos Prunello
+                            tags$p("Geneticae APP is a statistical Shiny Web APP for phenotypic analyses in plant breeding context, developed by Julia Angelini, Marcos Prunello
                                and Gerardo Cervigni, as part of the final work to obtain Specialist in Bioinformatics degree of the first author.", align = "justify"),
                             tags$p("Is an interactive, noncommercial and open source software, offering a free alternative to available commercial
                               software to analize METs.", align = "justify")
@@ -522,9 +523,9 @@ tabPanel("Analysis of variance",
                                        tags$p("Geneticae APP allows data in .csv format, delimited by commas or semiclons; as well as a header in first row of the file.
                                         Since this application connects to R and uses geneticae package functions, the format required by it must be respected.
                                         Observations must be in rows and variables (genotypes, environments, repetitions (if any) and the observed phenotype) in the columns.
-                                        Other variables that will not be used in the analysis can be included, since when the data set is loaded, the names of the columns corresponding
+                                        Other variables that will not be used in the analysis can be present in the dataset, since when the data is loaded the names of the columns corresponding
                                         to the genotype, environment, repetition (if any) and phenotype of interest must be indicated.", align = "justify"),
-                                       tags$p("Two sample datasets, ", em("plrv"), "and", em("yanwinterwheat"), ", included in geneticae R package, are also available in the APP to be downloaded and run the
+                                       tags$p("Two sample datasets, ", em("plrv"), "and", em("yanwinterwheat"), ", included in geneticae R package, are also available in the APP to be downloaded and run
                                        the examples (Figure 1, 2).", align = "justify"),
                                        tags$ol(
                                          tags$li(em("plrv"), " dataset (de Mendiburu, 2020): yield, plant weight and plot of
@@ -546,8 +547,8 @@ tabPanel("Analysis of variance",
                                      tags$p("To load a dataset, for example", em("yanwinterwheat"), ", it must indicated that the .csv file is delimited by
                                             semicolons, the header contains the names of each variable and also the name of the column
                                             containing genotype, environments and phenotypic information (Figure 3). If there are
-                                            repeats available, as is the case for the plrv dataset, the column name must also be specified.
-                                            As an example, this dataset will be used to show all the analyzes that can be performed using the Geneticae APP.", align = "justify"),
+                                            repetitions available, as is the case for the" ,em("Plrv"), " dataset, the column name must also be specified.
+                                            As an example,", em("yanwinterwheat"), "dataset will be used to show all the analyzes that can be performed using the Geneticae APP.", align = "justify"),
                                      tags$img(src="data.png", height="100%", width="100%"), br(),
                                      tags$h5(strong("Figure 3"),"Loading", em("yanwinterwheat"), "dataset"),br(),br(),
                                    ),
@@ -558,11 +559,10 @@ tabPanel("Analysis of variance",
                                  mainPanel(
                                    tags$h4(strong("Descriptive analysis of the dataset")),
                                    tags$p("Any study should start with a descriptive analysis of the dataset, the Descriptive Analysis tab provides some tools for that first step.
-                                          One of the graphs of interest is a boxplot that compares the quantitative trait across environments (Figure 4) or across genotypes (Figure 5).
-                                          This graphic is interactive, allowing to obtain the summary measures used for its construction by moving the mouse within it. In addition,
-                                          they can be downloaded in interactive format (.HTML) as well as in .png format by clicking on the Download button and on the camera that
-                                          appears in the graphic respectively (Figures 4 and 5).  The user can customize some aspects of the graph, such as the color of the
-                                          box and the names of the axes.", align = "justify"),
+                                          One of the graphs of interest should be a boxplot that compares the quantitative trait across environments (Figure 4) or across genotypes (Figure 5).
+                                          This is an interactive graph that shows the summary measures used for its construction by moving the mouse within it. In addition,
+                                          it can be downloaded in the interactive format (.HTML) as well as in .png format by clicking on the Download button and on the camera that
+                                          appears in the graphic, respectively (Figures 4 and 5). Some aspects of the graph can be customize by the user, such as box color and axes names.", align = "justify"),
                                    br(),
                                    tags$img(src="Boxplot_genotypes.png", height="100%", width="100%"), br(),
                                    tags$h5(strong("Figure 4:"),"Boxplot of genotypes for", em("yanwinterwheat"), "dataset"),
@@ -571,8 +571,7 @@ tabPanel("Analysis of variance",
                                    tags$img(src="Boxplot_environment.png", height="100%", width="100%"), br(),
                                    tags$h5(strong("Figure 5:"),"Boxplot of environments for", em("yanwinterwheat"), "dataset"),
                                    br(),
-                                   tags$p("The correlation between genotypes or between environments, for which both the correlation plot and
-                                   matrix can be obteined using Pearson or Spearman method (Figures 6 and 7). The positive correlations are shown in blue in the correlogram
+                                   tags$p("The Pearson or Spearman correlation between genotypes can be displayed as a graph or a matrix (Figures 6 and 7). Positive correlations are shown in blue
                                           and negative in red, the intensity of the color and the size of the circle are proportional to the correlation coefficients (Figure 6).", align = "justify"),
                                    br(),
                                    tags$img(src="corr_env.png", height="100%", width="100%"), br(),
@@ -586,7 +585,7 @@ tabPanel("Analysis of variance",
                                           an interaction plot may be of interest. The change in genotypic effect across environments are shown in Figure 8,
                                           while the change in the environmental effect through genotypes in Figure 9. It is a
                                           interactive graph, and therefore, it is possible to download in interactive (.HTML) as well as in .png format from the Download button and
-                                          when clicking on the camera, respectively (Figure 8 y 9). Additionally, the names of the axes can be customized by the user.", align = "justify"),
+                                          when clicking on the camera, respectively (Figure 8 y 9). Additionally, the axes names can be customized by the user.", align = "justify"),
                                    br(),
                                    tags$img(src="int_plotenv.png", height="100%", width="100%"), br(),
                                    tags$h5(strong("Figure 8:"),"Interaction plot for environments through genotypes of", em("yanwinterwheat"), "dataset"),
@@ -603,48 +602,46 @@ tabPanel("Analysis of variance",
                                    h4(strong("ANOVA")),
                                    tags$p("The phenotypic (P) consist of environmental (E), genotypic (G) and gentype-by-environment
                                           interaction (GEI) variation: P=E+G+GEI. If only the effects of G and E are significant
-                                          (that is, there is no GEI effect), the interaction must be ignored and the biplots are meaningless.
-                                          If the genotypes were evaluated only once in each environment, that is, there are no repetitions, the interaction
-                                          could not be tested.",
+                                          (that is, there is no GEI effect), the interaction must be ignored. Furthermre, if the genotypes were evaluated only once in each environment,
+                                          that is, there are no repetitions, the interaction could not be tested.",
                                           "Therefore, in ", em("yanwinterwheat"), "dataset, only the genotypic and environmental effects can be tested (Figure 10).", align = "justify"),
                                    br(),
                                    tags$img(src="ANOVA.png", height="100%", width="100%"), br(),
                                    tags$h5(strong("Figure 10:"),"Analysis of variance for", em("yanwinterwheat"), "dataset"),
                                    br(),br(),
                                    tags$p("The validity of the ANOVA conclusions depends on whether the errors have a normal distribution with a zero mean and constant variance.
-                                        Three tabs: Check normality, Check homocedasticity and Outliers allow verifying the above assumptions.The graphics to verify the assumptions
-                                        required by the ANOVA technique can be downloaded using the Download button in the corresponding tab. The normality  can be verified graphically with a histogram and a normal probability
-                                        graph (Figure 12). In addition, it can be tested with the shapiro-wilks test on the ANOVA residues (Figure 13).", align = "justify"),
+                                        Three tabs: Check normality, Check homocedasticity and Outliers allow verifying the above assumptions. The graphics to verify the assumptions
+                                        can be downloaded using the Download button in the corresponding tab. The normality  can be verified graphically with a histogram and a normal probability
+                                        graph (Figure 11). Also, shapiro-wilks test can be performed (Figure 12).", align = "justify"),
                                    br(),
                                    tags$img(src="Normalidad.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 12:"),"Normality errors asumption for", em("yanwinterwheat"), "dataset"),
+                                   tags$h5(strong("Figure 11:"),"Normality errors asumption for", em("yanwinterwheat"), "dataset"),
                                    br(),br(),
                                    tags$img(src="Normalidad2.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 13:"),"Shapiro-wilks test for", em("yanwinterwheat"), "dataset"),
+                                   tags$h5(strong("Figure 12:"),"Shapiro-wilks test for", em("yanwinterwheat"), "dataset"),
                                    br(),
-                                   tags$p("Homoskedasticity can be tested with residuals vs. predicted values plot, as well as with the levene test (Figure 14).
-                                        This test can be seen for both genotypes and environments (Figure 15).", align = "justify"),
+                                   tags$p("Homoskedasticity can be tested with residuals vs. predicted values plot (Figure 13), as well as with levene test for both genotypes and environments (Figure 14).", align = "justify"),
                                    br(),
                                    tags$img(src="Homocedasticidad.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 14:"),"Homoskedasticity of errors for", em("yanwinterwheat"), "dataset"),
+                                   tags$h5(strong("Figure 13:"),"Homoskedasticity of errors for", em("yanwinterwheat"), "dataset"),
                                    br(),br(),
                                    tags$img(src="levene.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 15:"),"Levene test for", em("yanwinterwheat"), "dataset"),
+                                   tags$h5(strong("Figure 14:"),"Levene test for", em("yanwinterwheat"), "dataset"),
                                    br(),br(),
-                                   tags$p("Finally, ANOVA is not robust in the presence of atypical observations, therefore graphs are included to detect if outliers (Figure 16).", align = "justify"),
+                                   tags$p("Finally, ANOVA is not robust in presence of atypical observations, therefore graphs to detect if outliers are included (Figure 15).", align = "justify"),
                                    br(),
                                    tags$img(src="Outliers.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 16:"),"Outliers in", em("yanwinterwheat"), "dataset"),
+                                   tags$h5(strong("Figure 15:"),"Outliers in", em("yanwinterwheat"), "dataset"),
                                    width = 10
                                  )),
                          tabPanel("GGE Biplot",
                                  mainPanel(
                                    h4(strong("Site regression model")),
-                                   tags$p("Site regression model (SREG) explore the joint effect of genotype plus genotype-by-environment performing a singular value decomposition
-                                      (SVD) on the matrix of residuals from a one-way ANOVA with fixed effects for environments.
+                                   tags$p("Site regression model (SREG) explore jointly genotype plus genotype-by-environment effect, performing a singular value decomposition
+                                      (SVD) on the matrix of residuals from a one-way ANOVA with environments fixed effects.
                                       The result of the first two multiplicative terms of the SVD is often presented in a biplot
                                       called genotype plus genotype x environment interaction (GGE) (Yan et al., 2000). Such biplot
-                                      represents an approximation of the G+GE effects. Increasingly, plant breeders have
+                                      represents a two-rank approximation of G+GE effects. Increasingly, plant breeders have
                                       found GGE biplots as useful tools in mega environment (ME) analysis (Yan et al., 2001; Yan
                                       and Rajcan, 2002), and genotype and environment evaluation (Bhan et al., 2005; Kang et al., 2006;
                                       Yan et al., 2007). ", align = "justify"),
@@ -655,7 +652,7 @@ tabPanel("Analysis of variance",
                                       tags$ol(
                                         tags$li("Basic biplot."),
                                         tags$li("Relationship Among Environments."),
-                                        tags$li("Which won where/what: Identifying the best cultivar in each environment."),
+                                        tags$li("Which won where/what: Identifying the best cultivar in each environment or mega-environment."),
                                         tags$li("Discrimination vs. representativeness."),
                                         tags$li("Ranking environments: Ranking environments with respect to the ideal environment."),
                                         tags$li("Mean vs. stability: Evaluating cultivars based on both average yield and stability."),
@@ -665,20 +662,21 @@ tabPanel("Analysis of variance",
                                    h4(strong("Some details")),
                                    tags$p("Since the model requires a single observation for each combination of genotype and environment,
                                           if there are repetitions, the phenotypic average value is automatically calculated
-                                          before fitting the model. Missing values are not allowed Missing values are NOT allowed.
+                                          before fitting the model. Missing values are not allowed.
                                           The centering, SVD, and scaling method must be selected. By default the data
-                                          is centered by G and GE, giving rise to the SREG model, another option in this argument will give
+                                          is centered by G and GEI, giving rise to the SREG model, another option in this argument will give
                                           rise to a different model. The choice of the SVD method does not alter the relationships or relative
                                           interactions between genotypes and environments, although the appearance of the biplot will be different (Yan, 2002)
                                           . Finally, different biplots can be generated depending on the
                                           scaling method, more information is available in Yan and Kang (2003) and Yan and Tinker (2006).
                                           In these graphs the cultivars are shown in lower case, to differentiate them from the environments,
-                                          which are in upper case. The centering, scaling and SVD method used, as well
-                                          as the G + GE percentage explained by the two axes can be added in the graph as a footnote to the biplot
-                                          s well as the title of the graph, and the name of the axes and if we want them not to appear", align = "justify"),
+                                          which are in upper case. The centering, scaling, SVD method used and the percentage of G + GEI variation explained by
+                                          the two axes can be added in the graph as a footnote. The title graph,  the name of the axes and if we want
+                                          the axis to appear or not can be configurated by the user. Also, the genotype and environments marker color and size
+                                          can be customized", align = "justify"),
                                    br(),
                                    tags$img(src="biplot_GGE.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 17:"),"Basic GGE biplot for", em("yanwinterwheat"), "dataset"),
+                                   tags$h5(strong("Figure 16:"),"Basic GGE biplot for", em("yanwinterwheat"), "dataset"),
                                    br(),
                                    width = 10
                                  )
@@ -695,7 +693,7 @@ tabPanel("Analysis of variance",
                                     i.e. to the interaction, to obtain the estimates for the multiplicative terms of the AMMI model.", align = "justify"),
                                    br(),
                                    tags$img(src="AMMI_S.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 18:"),"AMMI biplot for", em("yanwinterwheat"), "dataset"),
+                                   tags$h5(strong("Figure 17:"),"AMMI biplot for", em("yanwinterwheat"), "dataset"),
                                    br(), br(),
                                    h4(strong("Robust AMMI models")),
                                    tags$p(" The AMMI model, in its standard form, implicitly
@@ -712,13 +710,16 @@ tabPanel("Analysis of variance",
                                      tags$li("ppAMMI")
                                    ),
                                    br(),
-                                   h4(strong("Some details")),
-                                   tags$p("Since the model requires a single observation for each combination of genotype and environment,
-                                          if there are repetitions, the phenotypic average value is automatically calculated
-                                          before fitting the model. Missing values are not allowed Missing values are NOT allowed.", align = "justify"),
-                                   br(),
                                    tags$img(src="rAMMI_S.png", height="100%", width="100%"), br(),
                                    tags$h5(strong("Figure 19:"),"rAMMI biplot for", em("yanwinterwheat"), "dataset"),
+                                   br(),
+                                   h4(strong("Some details")),
+                                   tags$p("Since either the clasic and the robust alternatives requires a single observation for each combination of genotype and environment,
+                                          if there are repetitions, the phenotypic average value is automatically calculated
+                                          before fitting the model. Missing values are not allowed.The the percentage of GEI variation explained by
+                                          the two axes can be added in the graph as a footnote. The title graph,  the name of the axes and if we want
+                                          the axis to appear or not can be configurated by the user. Also, the genotype and environments marker color and size
+                                          can be customized", align = "justify"),
 
                                    width = 10
                                  )
@@ -1043,8 +1044,8 @@ interacInput <-eventReactive( input$do_int, {
   }
 
   intp <- intp +
-    stat_summary(fun.y = mean, geom = "point") +
-    stat_summary(fun.y = mean,geom = "line")+
+    stat_summary(fun = mean, geom = "point") +
+    stat_summary(fun = mean,geom = "line")+
     labs(y = input$axisy_int, x=input$axisx_int)+
     theme_few() +
     theme(text=element_text(family="Times", size=9),
@@ -1125,14 +1126,14 @@ output$Anova2 <- renderPrint({
 
   if(!is.null(input$select_rep)){
     showModal(modalDialog(
-      "The interaction effect can be tested since there are repetitions in the data set",
+      "The interaction effect can be tested since there are repetitions in the dataset",
       footer = list(
         actionButton("ok", "OK")
       )
     ))
   }else{
     showModal(modalDialog(
-      "The interaction effect can not be tested since there aren´t repetitions in the data set",
+      "The interaction effect can not be tested since there aren´t repetitions in the dataset",
       footer = list(
         actionButton("ok", "OK")
       )
@@ -1258,7 +1259,7 @@ output$residual_test <- renderText({
     session = session,
     title = "Normality is verify!!",
     text = paste("Shapiro-Wilk statistic:", round(shapiro$statistic,2),"p-value:",round(shapiro$p.value,4),
-                 "\n", "5% significance level"),
+                 ",\n", "5% significance level"),
     type = "success"
   )
   }else{
@@ -1266,7 +1267,7 @@ output$residual_test <- renderText({
       session = session,
       title = "Normality is not verify",
       text = paste("Shapiro-Wilk statistic:", round(shapiro$statistic,2),"p-value:",round(shapiro$p.value,4),
-                   "\n\n", "5% significance level"),
+                   ",\n", "5% significance level"),
       type = "error"
     )
 }
