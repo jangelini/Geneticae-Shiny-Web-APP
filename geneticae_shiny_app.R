@@ -14,17 +14,12 @@
 rm(list=ls(all=TRUE))
 library(shiny)
 library(ggplot2)
-library(tidyr)
 library(car)
-# library(corrplot)
 library(shinythemes)
 library(DT)
-# library(formattable)
 library(geneticae)
 library(dplyr)
 library(kableExtra)
-# library(RColorBrewer)
-library(ggfortify)
 library(ggcorrplot)
 library(shinyWidgets)
 library(ggthemes)
@@ -740,7 +735,7 @@ tabPanel("Analysis of variance",
 
 
 #------------------------
-# Definir funci?n server
+# Define funcion server
 #------------------------
 
 server <- function(input, output, session) {
