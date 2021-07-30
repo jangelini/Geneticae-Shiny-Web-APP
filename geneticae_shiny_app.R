@@ -480,8 +480,7 @@ tabPanel("Analysis of variance",
                             tags$p("Understanding the relationship between crops performance and environment is a key problem for plant breeders
                                 and geneticists. In advanced stages of breeding programs, multi-environmental
                                 trials (MET) is one of the most common experiments. They are conducted by testing a number of genotypes across
-                                multiple environments, allowing the identification of superior genotypes. Crop performance, is a function of genotype
-                                (G), environment (E) and genotype x environment interaction (GEI). METs are essential due to the presence of GEI
+                                multiple environments, allowing the identification of superior genotypes. METs are essential due to the presence of GEI
                                 which generates differential genotypic responses in the different environments evaluated (Crossa et al., 1990;
                                 Cruz Medina, 1992; Kang and Magari, 1996). This is a particular problem for plant breeders (Giauffret et al., 2000),
                                 therefore appropriate statistical methods should be used to obtain an adequate GEI analysis.", align = "justify"),
@@ -490,8 +489,8 @@ tabPanel("Analysis of variance",
                                 In particular, geneticae package was developed by our group and offers functions for METs analysis. However, R has a complex syntax, and therefore is not friendly
                                 for those who do not know R programming language. Frequently, breeders use programs with graphical user interface
                                 to perform statistical analysis, but not all of them allow all the analyzes of interest to be carried out and therefore, several of them must be used to fulfill an objective.
-                                This generates the need to have different programs to perform a complete analysis, to know the data formats required by each one and to understand the different types
-                                  of results that they generate.", align = "justify"),
+                                To reduce this disadvantage, Geneticae APP is created. It provides a graphical interface to geneticae R package, which includes recently published methodology and brings
+                                together the most useful functions for MET analysis, removing the obstacle of R programming language complexity. ", align = "justify"),
                             tags$p("The objective of Geneticae APP is to create a graphical interface of geneticae package, removing the obstacle of R programming language complexity.", align = "justify")
                         ), tags$br(),
                         tags$h4(strong("About Geneticae APP")),
