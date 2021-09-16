@@ -4,7 +4,7 @@
 #              provenientes de ensayos multiambientales. Análisis descriptivos, ANOVA,
 #              y biplots se pueden realizar. Estos últimos se obtienen del paquete
 #              geneticae.
-# Autora: Julia Angelini
+# Autora: Julia Angelini, Marcos Prunello, Gerardo Cervigni
 #---------------------------------------------------------------------------------------
 
 #-----------
@@ -78,8 +78,10 @@ gg_qq <- function(x, distribution = "norm", ..., line.estimate = NULL, conf = 0.
 ui <- navbarPage(
   title=HTML('<span style="font-family: Lobste, cursive;font-size:175%;color:white;font-weight:bold;">Geneticae APP</span></a>'),
   theme = shinytheme("united"),
+  # The data
   tabPanel("The data",
            tabsetPanel(
+                # Import a dataset
                  tabPanel("User data", icon = icon("table"),
                           sidebarPanel(
                                 csvFileInput("datafile", "User data (.csv format)"), br(),
@@ -92,6 +94,7 @@ ui <- navbarPage(
                                 ),
                           mainPanel(dataTableOutput("table"), width=8)
                         ),
+                 # Examples dataset
                  tabPanel(strong("Examples dataset"), icon = icon("table"),
                           sidebarPanel(br(), strong("Example without repetitions"), br(),
                                 actionButton("example_withoutrep", "Show"), br(), br(),
@@ -111,8 +114,10 @@ ui <- navbarPage(
                           )
              )
   ),
+  # Descriptive Analysis
   tabPanel("Descriptive analysis",
            tabsetPanel(
+                # Boxplot
                 tabPanel("Boxplot", icon = icon("bar-chart-o"),
                          sidebarLayout(
                               sidebarPanel(
@@ -150,6 +155,7 @@ ui <- navbarPage(
                         mainPanel(br(),plotlyOutput("boxplot"), width=6)
                         )
                   ),
+                # Correlation Plot
                 tabPanel("Correlation plot", icon = icon("bar-chart-o"),
                           sidebarLayout(
                               sidebarPanel(
@@ -191,6 +197,7 @@ ui <- navbarPage(
                               ),
                             mainPanel(br(), plotOutput("corplot"), width=6))
              ),
+             # Correlation Matrix
              tabPanel("Correlation matrix", icon = icon("table"),
                         sidebarLayout(
                             sidebarPanel(
@@ -223,6 +230,7 @@ ui <- navbarPage(
                             mainPanel(br(), htmlOutput("cormat"))
                             )
              ),
+             # Interaction Plot
              tabPanel("Interaction Plot", icon = icon("bar-chart-o"),
                           sidebarLayout(
                               sidebarPanel(
@@ -253,11 +261,14 @@ ui <- navbarPage(
              )
        )
  ),
+# ANOVA
 tabPanel("Analysis of variance",
          tabsetPanel(
-              tabPanel("ANOVA" , icon = icon("table"), br(),br(),
+             # ANOVA model
+             tabPanel("ANOVA" , icon = icon("table"), br(),br(),
                       mainPanel( htmlOutput("Anova"), verbatimTextOutput("Anova2"))
                       ),
+             # Normality assumption
              tabPanel("Check Normality", icon = icon("bar-chart-o"),
                       sidebarLayout(
                            sidebarPanel( br(),
@@ -287,7 +298,8 @@ tabPanel("Analysis of variance",
                                     verbatimTextOutput("residual_test")
                           )
                     )
-             ),
+                ),
+             # Homocedasticity assumption
              tabPanel("Check Homoscedasticity", icon = icon("bar-chart-o"),
                       sidebarLayout(
                           sidebarPanel( br(),
@@ -307,6 +319,7 @@ tabPanel("Analysis of variance",
                       mainPanel(plotOutput("residual_linearity"))
                       )
              ),
+             # Outliers
              tabPanel("Outliers", icon = icon("bar-chart-o"),
                       sidebarLayout(
                           sidebarPanel( br(),
@@ -324,6 +337,8 @@ tabPanel("Analysis of variance",
               )
         )
   ),
+
+  # GGE biplot
   tabPanel("GGE Biplot", icon = icon("bar-chart-o"),
            sidebarLayout(
                 sidebarPanel(
@@ -415,6 +430,8 @@ tabPanel("Analysis of variance",
               mainPanel(plotOutput("plotGGE"))
       )
   ),
+
+  #AMMI biplot
   tabPanel("AMMI Biplot", icon = icon("bar-chart-o"),
            sidebarLayout(
                 sidebarPanel(
@@ -471,42 +488,132 @@ tabPanel("Analysis of variance",
             mainPanel( plotOutput("plotAMMI"))
         )
   ),
-
+  # Help
   navbarMenu("Help",icon = icon("question-circle"),
-             tabPanel("General",
+             tabPanel("Getting Started",
                       mainPanel(
                         tags$h4(strong("Motivation")),
                         tags$div(
-                            tags$p("Understanding the relationship between crops performance and environment is a key problem for plant breeders
-                                and geneticists. In advanced stages of breeding programs, multi-environmental
-                                trials (MET) is one of the most common experiments. They are conducted by testing a number of genotypes across
-                                multiple environments, allowing the identification of superior genotypes. METs are essential due to the presence of GEI
-                                which generates differential genotypic responses in the different environments evaluated (Crossa et al., 1990;
-                                Cruz Medina, 1992; Kang and Magari, 1996). This is a particular problem for plant breeders (Giauffret et al., 2000),
-                                therefore appropriate statistical methods should be used to obtain an adequate GEI analysis.", align = "justify"),
-                           tags$p("Nowadays, computer programs have become a basic tool for data analysis. Currently, R is one of the most used programs due to
-                                its power and free distribution. This software consists of a large number of packages which can perform different types of analysis.
-                                In particular, geneticae package was developed by our group and offers functions for METs analysis. However, R has a complex syntax, and therefore is not friendly
-                                for those who do not know R programming language. Frequently, breeders use programs with graphical user interface
-                                to perform statistical analysis, but not all of them allow all the analyzes of interest to be carried out and therefore, several of them must be used to fulfill an objective.
-                                To reduce this disadvantage, Geneticae APP is created. It provides a graphical interface to geneticae R package, which includes recently published methodology and brings
-                                together the most useful functions for MET analysis, removing the obstacle of R programming language complexity. ", align = "justify"),
-                            tags$p("The objective of Geneticae APP is to create a graphical interface of geneticae package, removing the obstacle of R programming language complexity.", align = "justify")
-                        ), tags$br(),
-                        tags$h4(strong("About Geneticae APP")),
-                        tags$div(
-                            tags$p("Geneticae APP is a statistical Shiny Web APP for phenotypic analyses in plant breeding context, developed by Julia Angelini, Marcos Prunello
-                               and Gerardo Cervigni, as part of the final work to obtain Specialist in Bioinformatics degree of the first author.", align = "justify"),
-                            tags$p("Is an interactive, noncommercial and open source software, offering a free alternative to available commercial
-                              software to analize METs.", align = "justify")
-                        ), tags$br(),
-                        tags$h4(strong("Citation and contact"), align = "justify"),
-                        tags$h5("..............", align = "justify"), br(),
-                        tags$h5("Maintainer: Julia Angelini"),
-                        a(actionButton(inputId = "email1", label = "Contact Maintainer",
-                                       icon = icon("envelope", lib = "font-awesome")),
+                            tags$p("Understanding the relationship between crops performance and environment is a
+                                    key problem for plant breeders and geneticists. In advanced stages of breeding
+                                    programs, in which few genotypes are evaluated, multi-environment trials (MET)
+                                    are one of the most used experiments. Such studies test a number of genotypes in
+                                    multiple environments in order to identify the superior genotypes according to
+                                    their performance. In these experiments, crop performance is modeled as a
+                                    function of genotype (G), environment (E) and genotype-environment interaction
+                                    (GEI). The presence of GEI generates differential genotypic responses in the
+                                    different environments (Angelini et al., 2019; Crossa, 1990; Kang and Magari,
+                                    1996). Therefore appropriate statistical methods should be used to obtain an
+                                    adequate GEI analysis, which is essential for plant breeders (Giauffret et al.,
+                                    2000).",
+                                   align = "justify"),
+                            tags$p("The average performance of genotypes through different environments can only be
+                                    considered in the absence of GEI (Yan and Kang, 2003). However, GEI is almost
+                                    always present and the comparison of the mean performance between genotypes is
+                                    not enough. The most widely used methods to analyze MET data are based on
+                                    regression models, analysis of variance (ANOVA) and multivariate techniques. In
+                                    particular, two statistical models are widely used among plant breeders as they
+                                    provide useful graphical tools for the study of GEI: the Additive Main effects
+                                    and Multiplicative Interaction model (AMMI) (Kempton, 1984; Gauch, 1988) and the
+                                    Site Regression Model (SREG) (Cornelius et al., 1996; Gauch and Zobel, 1997).
+                                    However, these models are not always efficient enough to analyze MET data
+                                    structure of plant breeding programs. They present serious limitations in the
+                                    presence of atypical observations and missing values, which occur very
+                                    frequently. To overcome this, several imputation alternatives and a robust AMMI
+                                    were recently proposed in literature.",
+                                   align = "justify"),
+                            tags$p("Although there are R packages which tackle different aspects of MET data
+                                    analysis, there aren't any packages capable of performing all the steps that
+                                    need to be considered. The geneticae package was created to gather in one
+                                    place the most useful functions for this type of analysis and it also implements
+                                    new methodology which can be found in recent literature. More importantly,
+                                    geneticae is the first package to implement the robust AMMI model and new
+                                    imputation methods not available before. In addition, there is no need to
+                                    preprocess the data to use the `geneticae` package, as it the case of some
+                                    previous packages which require a data frame or matrix containing genotype by
+                                    environment  means  with  the genotypes in rows and the environments in columns.
+                                    In this package, data in long format is required. Genotypes, environments,
+                                    repetitions (if any) and phenotypic traits of interest can be presented in any
+                                    order and there is no restriction on columns names. Also, extra information that
+                                    will not be used in the analysis may be present in the dataset. Finally,
+                                    `geneticae` offers a wide variety of options to customize the biplots, which are
+                                    part of the graphical output of these methods.",
+                                    align = "justify"),
+                            tags$p("However, R has a complex syntax and therefore is not friendly for those who do
+                                    not know R programming language. Frequently, breeders use programs with graphical
+                                    user interface to perform statistical analysis, but not all of them allow all
+                                    the analyzes of interest to be carried out and therefore, several of them must
+                                    be used to fulfill an objective. To reduce this disadvantage, geneticae package
+                                    can be used through Shiny app, making it available not only for R programmers,
+                                    removing the obstacle of R programming language complexity.",
+                                   align = "justify"),
+                            tags$p("Geneticae APP is a statistical Shiny Web APP for phenotypic analyses in plant
+                                    breeding context, developed by Julia Angelini, Marcos Prunello and Gerardo Cervigni.
+                                    Is an interactive, noncommercial and open source software, offering a free alternative
+                                    to available commercial software to analize METs.",
+                                   align = "justify")
+                        ),
+                        tags$br(),
+                        tags$h4(strong("Small example"),
+                                align = "justify"),
+                        tags$p("If you are just getting started with Geneticae APP we recommend visiting and exploring
+                                  the examples throughout the tutorial.",
+                                align = "justify"),
+                        tags$p("Here we present a small example.",
+                               align = "justify"),
+                        tags$p("The dataset yan.winterwheat available as example dataset has information about the yield
+                                of 18 winter wheat varieties grown in nine environments in Ontario at 1993. The GGE biplot
+                                visually addresses many issues relative to genotype and test environment evaluation. The
+                                tag GGE Biplot allows to builds several GGE biplots views. The basic biplot is produced
+                                by default. If Which Won Where/What is indicate in plot type, and the other options are
+                                left by default the polygonal view of the GGE biplots is provides (Figure 1). This is
+                                an effective way to visualize the which-won-where pattern of MET data. Cultivars in the
+                                vertices of the polygon (Fun,Zav, Ena, Kat and Luc) are those with the longest vectors,
+                                in their respective directions, which is a measure of the ability to respond to
+                                environments. The vertex cultivars are, therefore, among the most responsive cultivars;
+                                all other cultivars are less responsive in their respective directions.",
+                               align = "justify"),
+                       tags$p("The dotted lines are perpendicular to the polygon sides and divide the biplot into
+                               mega-environments, each of which has a vertex cultivar, which is the one with the
+                               highest yield (phenotype) in all environments found in it. OA93 and KE93 are in the
+                               same sector, separated from the rest of the biplot by two perpendicular lines, and
+                               Zav is the highest-yielding cultivar in this sector. Fun is the highest-yielding
+                               cultivar in its sector, which contains seven environments, namely, EA93, BH93, HW93,
+                               ID93, WP93, NN93, and RN93. No environments fell in the sectors with Ena, Kat, and
+                               Luc as vertex cultivars. This indicates that these vertex cultivars were not the
+                               best in any of the test environments. Moreover, these cultivars were the poorest
+                               in some or all of the environments.",
+                               align = "justify"),
+                       tags$div(
+                       tags$img(src="Ejemploinicial.png", height="65%", width="65%", align = "middle"),
+                       tags$h5("Figure 1: polygon view of the GGE biplot, showing which cultivars presented
+                                      highest yield in each environment. The scaling method used is symmetrical
+                                      singular value partitioning (by default). The 78% of G + GE variability is
+                                      explained by the first two multiplicative terms. Cultivars are shown in
+                                      lowercase and environments in uppercase."),
+                       align = "center"
+                       ),
+                       br(),
+                       tags$br(),
+                       tags$h4(strong("Authors"),
+                               align = "justify"
+                               ),
+                       tags$ul(
+                         tags$li("Julia Angelini"),
+                         tags$li("Marcos Prunello"),
+                         tags$li("Gerardo Cervigni"),
+                         align = "justify"
+                         ),
+                       br(),
+                       tags$h5("Maintainer: Julia Angelini"),
+                       a(actionButton(inputId = "email1",
+                                      label = "Contact Maintainer",
+                                      icon = icon("envelope",
+                                                   lib = "font-awesome")
+                                       ),
                           href="mailto: jangelini_93@hotmail.com.com"),
-                        width = 11)
+                       width = 11),
+                      br(),br()
              ),
              tabPanel("How to use the APP",
                     navlistPanel(widths = c(3, 9),
@@ -514,37 +621,55 @@ tabPanel("Analysis of variance",
                                  mainPanel(
                                    tags$h4(strong("Preparing data file for Geneticae APP")),
                                    tags$div(
-                                       tags$p("Geneticae APP allows data in .csv format, delimited by commas or semiclons; as well as a header in first row of the file.
-                                        Since this application connects to R and uses geneticae package functions, the format required by it must be respected.
-                                        Observations must be in rows and variables (genotypes, environments, repetitions (if any) and the observed phenotype) in the columns.
-                                        Other variables that will not be used in the analysis can be present in the dataset, since when the data is loaded the names of the columns corresponding
-                                        to the genotype, environment, repetition (if any) and phenotype of interest must be indicated.", align = "justify"),
-                                       tags$p("Two sample datasets, ", em("plrv"), "and", em("yanwinterwheat"), ", included in geneticae R package, are also available in the APP to be downloaded and run
-                                       the examples (Figure 1, 2).", align = "justify"),
+                                       tags$p("Geneticae APP allows data in .csv format, delimited by commas or semiclons and
+                                               the columns names in the first row of the file (heading). Data in long format
+                                               is required by this function, i.e. each row corresponds to one observation and
+                                               each column to one variable (genotype, environment, repetition (if any) and the
+                                               observed phenotype). If each genotype has been evaluated more than once at each
+                                               environment, the phenotypic mean for each combination of genotype and environment
+                                               is internally calculated and then the model is estimated. Extra variables that will
+                                               not be used in the analysis may be present in the dataset. Missing values are not allowed.",
+                                              align = "justify"),
+                                       tags$p("Two datasets, ", em("plrv"), "and", em("yanwinterwheat"), ", are available in the APP
+                                              (Figure 2).", align = "justify"),
                                        tags$ol(
-                                         tags$li(em("plrv"), " dataset (de Mendiburu, 2020): yield, plant weight and plot of
-                                                 28 genotypes in 6 locations in Peru, in order to study resistance to PLRV (Patato Leaf Roll Virus)
-                                                 that causes leaf roll. Each clone was evaluated three times in each environment.", align = "justify"),
+                                         tags$li(em("plrv"), " dataset (de Mendiburu, 2020): esistance study to PLRV (Patato Leaf Roll
+                                                 Virus) causing leaf curl. 28 genotypes were experimented at 6 locations in Peru.
+                                                 Each clone was evaluated three times in each environment, and yield, plant weight
+                                                 and plot were registered.", align = "justify"),
                                          br(),
-                                         tags$li(em("yanwinterwheat"), " dataset (Wright, 2018): yield of 18 varieties of winterwheat grown
-                                                 in nine environments in Ontario in 1993. Although the experiment had four blocks or replications, only the
-                                                 yield average for every combination of variety and environment is available.", align = "justify")
-                                       )
-                                   ), br(),
-                                   tags$img(src="Exampledatasets_withrep.png", height="100%", width="100%"),
-                                   tags$h5(strong("Figure 1:"),em("Plrv"), "dataset"),br(),br(),
-                                   tags$img(src="Exampledatasets_withoutrep.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 2"),em("yanwinterwheat"), "dataset"),br(),br(),
-
+                                         tags$li(em("yanwinterwheat"), " dataset (Wright, 2020): yield of 18 winter wheat varieties
+                                                 grown in nine environments in Ontario at 1993. Although four blocks or replicas in each
+                                                 environment were performed in the experiment, only yield mean for each variety and
+                                                 environment combination was available.",
+                                                 align = "justify")
+                                       ),
+                                       tags$p("They are available in the tab", em("The data -> Examples dataset"), ", and can be downloaded in
+                                              .cvs format. The ", em("yanwinterwheat"), "dataset will be used to illustrate the methodology
+                                              included in Geneticae APP to analyse MET data.",
+                                              align = "justify")
+                                   ),
+                                   br(),
+                                   tags$div(
+                                   tags$img(src="Exampledatasets.png", height="100%", width="100%"),
+                                   tags$h5(strong("Figure 2: (A)"),em("Plrv"), "dataset", strong("(B) "),em("yanwinterwheat"), "dataset"),
+                                   align="center"),
+                                   br(),br(),
                                    tags$div(
                                      tags$h4(strong("Loading a dataset into the APP")),
-                                     tags$p("To load a dataset, for example", em("yanwinterwheat"), ", it must indicated that the .csv file is delimited by
-                                            semicolons, the header contains the names of each variable and also the name of the column
-                                            containing genotype, environments and phenotypic information (Figure 3). If there are
-                                            repetitions available, as is the case for the" ,em("Plrv"), " dataset, the column name must also be specified.
-                                            As an example,", em("yanwinterwheat"), "dataset will be used to show all the analyzes that can be performed using the Geneticae APP.", align = "justify"),
-                                     tags$img(src="data.png", height="100%", width="100%"), br(),
-                                     tags$h5(strong("Figure 3"),"Loading", em("yanwinterwheat"), "dataset"),br(),br(),
+                                     tags$p("The dataset to be analyzed must be loaded in the ", em (" Data -> User data "), "tab.
+                                            For example,to import the yanwinterwheat dataset, the .csv file must be loaded and
+                                            indicate that it is delimited by semicolon, that the first row contains the names of
+                                            each variable (header) as well as the column name with genotype, environments and
+                                            phenotypic trait information which are gen, env and yield in this case (Figure 3).
+                                            If repetitions are availabe, specify the name of that column, otherwise, do not
+                                            indicate anything.",
+                                            align = "justify"),
+                                     tags$div(
+                                      tags$img(src="data.png", height="60%", width="60%"), br(),
+                                      tags$h5(strong("Figure 3"),"Loading", em("yanwinterwheat"), "dataset to Geneticae APP"),br(),br(),
+                                      align="center"
+                                      ),
                                    ),
                                    width = 11
                                    )
@@ -552,41 +677,52 @@ tabPanel("Analysis of variance",
                           tabPanel("Descriptive analysis",
                                  mainPanel(
                                    tags$h4(strong("Descriptive analysis of the dataset")),
-                                   tags$p("Any study should start with a descriptive analysis of the dataset, the Descriptive Analysis tab provides some tools for that first step.
-                                          One of the graphs of interest should be a boxplot that compares the quantitative trait across environments (Figure 4) or across genotypes (Figure 5).
-                                          This is an interactive graph that shows the summary measures used for its construction by moving the mouse within it. In addition,
-                                          it can be downloaded in the interactive format (.HTML) as well as in .png format by clicking on the Download button and on the camera that
-                                          appears in the graphic, respectively (Figures 4 and 5). Some aspects of the graph can be customize by the user, such as box color and axes names.", align = "justify"),
+                                   tags$p("Any study should start with a descriptive analysis of the dataset, the", em ("Descriptive Analysis"),
+                                          "tab provides some tools for that first step.",
+                                          align = "justify"),
+                                   tags$p("Boxplot that compares the quantitative trait across environments (Figure 4) or
+                                          across genotypes (Figure 5) may be one of the plo of interest. The summary measures used
+                                          for its construction are shown interactively by moving the mouse within it.
+                                          In addition, it can be downloaded in the interactive format (.HTML) as well as in .png
+                                          format by clicking on the Download button and on the camera that appears in the graphic,
+                                          respectively (Figures 4). Some aspects of the graph can be customize by the user,
+                                          such as box color and axes names.",
+                                          align = "justify"),
                                    br(),
-                                   tags$img(src="Boxplot_genotypes.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 4:"),"Boxplot of genotypes for", em("yanwinterwheat"), "dataset"),
-                                   br(),
-                                   br(),
-                                   tags$img(src="Boxplot_environment.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 5:"),"Boxplot of environments for", em("yanwinterwheat"), "dataset"),
-                                   br(),
-                                   tags$p("The Pearson or Spearman correlation between genotypes can be displayed as a graph or a matrix (Figures 6 and 7). Positive correlations are shown in blue
-                                          and negative in red, the intensity of the color and the size of the circle are proportional to the correlation coefficients (Figure 6).", align = "justify"),
-                                   br(),
-                                   tags$img(src="corr_env.png", height="100%", width="100%"), br(),
-                                   br(),
-                                   tags$h5(strong("Figure 6:"),"Correlation plot between genotypes of", em("yanwinterwheat"), "dataset"),
-                                   br(),
-                                   tags$img(src="corr_env.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 7:"),"Correlation matrix between environments of", em("yanwinterwheat"), "dataset"),
-                                   br(),
-                                   tags$p("Since inconsistencies in the performance of genotypes in different environments complicate plant breeders job,
-                                          an interaction plot may be of interest. The change in genotypic effect across environments are shown in Figure 8,
-                                          while the change in the environmental effect through genotypes in Figure 9. It is a
-                                          interactive graph, and therefore, it is possible to download in interactive (.HTML) as well as in .png format from the Download button and
-                                          when clicking on the camera, respectively (Figure 8 y 9). Additionally, the axes names can be customized by the user.", align = "justify"),
-                                   br(),
-                                   tags$img(src="int_plotenv.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 8:"),"Interaction plot for environments through genotypes of", em("yanwinterwheat"), "dataset"),
+                                   tags$div(
+                                    tags$img(src="Boxplot_genotypes.png", height="100%", width="100%"), br(),
+                                    tags$h5(strong("Figure 4: "),"boxplot of" , strong("(A) "), "genotypes and ", strong("(B) "),
+                                            "environments for", em("yanwinterwheat"), "dataset"),
+                                    align="center"),
                                    br(),
                                    br(),
-                                   tags$img(src="int_plot.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 9:"),"Interaction plot for genotypes through environments of", em("yanwinterwheat"), "dataset"),
+                                   tags$p("The Pearson or Spearman correlation between genotypes can be displayed as a graph
+                                          or a matrix (Figures 5). Positive correlations are shown in blue and negative in red,
+                                          the intensity of the color and the size of the circle are proportional to the correlation
+                                          coefficients (Figure 5).",
+                                          align = "justify"),
+                                   br(),
+                                   tags$div(
+                                    tags$img(src="corr_env.png", height="100%", width="100%"), br(),
+                                    tags$h5(strong("Figure 5:"),"Correlation plot between (A) genotypes and (B) environmente of",
+                                            em("yanwinterwheat"), "dataset"),
+                                    align="center"),
+                                   br(),
+                                   br(),
+                                   tags$p("Since inconsistencies in the performance of genotypes in different environments complicate
+                                          plant breeders job, an interaction plot may be of interest. The change in genotypic effect
+                                          across environments are shown in Figure 8, while the change in the environmental effect
+                                          through genotypes in Figure 9. It is a interactive graph, and therefore, it is possible
+                                          to download in interactive (.HTML) as well as in .png format from the Download button and
+                                          when clicking on the camera, respectively (Figure 8 y 9). Additionally, the axes names
+                                          can be customized by the user.",
+                                          align = "justify"),
+                                   br(),
+                                   tags$div(
+                                    tags$img(src="int_plotenv.png", height="100%", width="100%"), br(),
+                                    tags$h5(strong("Figure 8:"),"Interaction plot for (A) environments through genotypes and (B)
+                                            genotypes through environments of", em("yanwinterwheat"), "dataset"),
+                                    align="center"),
                                    br(),
                                    width = 10
                                  )
