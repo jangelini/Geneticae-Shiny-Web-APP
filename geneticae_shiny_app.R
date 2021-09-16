@@ -25,6 +25,7 @@ library(shinyWidgets)
 library(ggthemes)
 library(plotly)
 library(shinyhelper)
+library(tidyr)
 
 #---------------------
 # Funciones auxiliares
@@ -872,6 +873,9 @@ tabPanel("Analysis of variance",
                                           lack usefulness but it can also provide biased information on the evaluated cultivars.",
                                           align = "justify"),
                                    br(),
+                                   strong("ESTO CREO Q VUELA... TENDRIA Q PONER PARA QUE SELECCIONEN LOS AMBIENTES DEL MEGA AMBIENTE, NO SE...
+                                          MEDIO DIFICIL... CREO Q QUEDARIA PARA UNA PROXIMA VERSION... LAS VISTAS DEL BIPLOT QUE REQUIEREN DE
+                                          SELECCIONAR ALGO NO LAS PUSE PARA NO COMPLICARME LA VIDA... "),
                                    tags$p("To visualize these measurements, an average environment coordinate is defined and the center of
                                           a set of concentric circles represents the ideal environment. Figure 10 shows the GGE biplots view
                                           for the mega-environment with BH93, EA93, HW93, ID93, NN93, RN93 and WP93. The angle between the
@@ -972,26 +976,26 @@ tabPanel("Analysis of variance",
 
 server <- function(input, output, session) {
   observe_helpers(withMathJax = TRUE)
-# Seleccion de archivo .csv
+
+
+####################
+# Load user dataset
+####################
+
 datafile <- callModule(csvFile, "datafile",
                          stringsAsFactors = FALSE)
 
-# Setear el tipo de letra para graficos
-# windowsFonts(Times = windowsFont("Arial Unicode MS"))
-
-
-# Mostrar el conjunto de datos
-
+# Show dataset
 output$table <- renderDataTable({
-dat<-as.data.frame(datafile())
-datatable(dat, editable="cell", class = 'cell-border stripe', rownames = F) %>%
+dat <- as.data.frame(datafile())
+datatable(dat, editable = "cell", class = 'cell-border stripe', rownames = F) %>%
       formatStyle(1:ncol(dat),
                   # background = styleColorBar(c(0, 1), 'lightgray'),
                   backgroundSize = '98% 88%',
                   backgroundRepeat = 'no-repeat',
                   backgroundPosition = 'center', color = "black",
-                  backgroundColor="white",
-                  fontWeight="bold", textAlign = 'center',
+                  backgroundColor = "white",
+                  fontWeight = "bold", textAlign = 'center',
                   striped = FALSE)
 })
 
@@ -1021,14 +1025,19 @@ output$select_pheno <- renderUI({
                      choices = names(datafile()))
 })
 
+
+####################
+# Examples dataset
+####################
+
+# Data without replication
 example_withoutrep <- reactive({
-  # Data without replication
   data(yan.winterwheat)
-  data_withoutrep <-yan.winterwheat
+  data_withoutrep <- yan.winterwheat
 })
 
+# Data with replication
 example_withrep <- reactive({
-  # Data with replication
   data(plrv)
   data_withrep <- plrv
 })
@@ -1036,7 +1045,7 @@ example_withrep <- reactive({
 # Show example dataset
 observeEvent( input$example_withoutrep,
 
-output$show_example<-renderText({
+output$show_example <- renderText({
 
   knitr::kable(example_withoutrep(), font_size = 12,
                caption = "Dataset example without repetitions") %>%
@@ -1047,16 +1056,15 @@ output$show_example<-renderText({
 )
 
 observeEvent(input$example_withrep,
-output$show_example<-renderText({
+output$show_example <- renderText({
   knitr::kable(example_withrep(), font_size = 12,
                caption = "Dataset example with repetitions") %>%
     kable_styling(position = "center")
 })
 )
 
- # Downloadable csv of sample dataset ----
-
-output$downloadexample_withoutrep<- downloadHandler(
+# Downloadable csv of sample dataset
+output$downloadexample_withoutrep <- downloadHandler(
   filename = function() {
     paste(input$Filename1, '.csv', sep = '')
   },
@@ -1065,9 +1073,7 @@ output$downloadexample_withoutrep<- downloadHandler(
   }
 )
 
-
-
-output$downloadexample_withrep<- downloadHandler(
+output$downloadexample_withrep <- downloadHandler(
   filename = function() {
     paste(input$Filename2, '.csv', sep = '')
   },
@@ -1076,40 +1082,39 @@ output$downloadexample_withrep<- downloadHandler(
   }
 )
 
+####################
+# Preprocessing user dataset
+####################
 
-sinrep<-reactive({
-  data<- datafile() %>%
+sinrep <-reactive({
+  data <- datafile() %>%
           group_by(!!sym(input$select_gen), !!sym(input$select_env)) %>%
-          summarise(mean_resp=mean(!!sym(input$select_pheno)))%>%
+          summarise(mean_resp = mean(!!sym(input$select_pheno)))%>%
           spread(!!sym(input$select_env), mean_resp) %>%
           as.data.frame()
 
-  rownames(data)<-data[,1]
-  data<-data[,-1]
+  rownames(data) <- data[,1]
+  data <- data[,-1]
 })
-# -------------------------------------------------------
-#    No anda por eso no hacen matrz de corr
-# -------------------------------------------------------
-
-
 
 dataset <- reactive({
-  datos <-datafile() %>%
-    mutate(gen=factor(!!sym(input$select_gen)),
-           env=factor(!!sym(input$select_env)),
-           pheno=!!sym(input$select_pheno))%>%
+  datos <- datafile() %>%
+    mutate(gen = factor(!!sym(input$select_gen)),
+           env = factor(!!sym(input$select_env)),
+           pheno = !!sym(input$select_pheno))%>%
     as.data.frame()
 })
 
-
+####################
 # Descriptive analysis
+####################
 
 # Boxplot
 boxplotInput <- eventReactive( input$do, {
-    if(input$Var=="Environment"){
-      boxp_ <-  ggplot(dataset(), aes(x=env, y=pheno))
+    if(input$Var == "Environment"){
+      boxp_ <-  ggplot(dataset(), aes(x = env, y = pheno))
     } else{
-      boxp_ <-  ggplot(dataset(), aes(x=gen, y=pheno))
+      boxp_ <-  ggplot(dataset(), aes(x = gen, y = pheno))
     }
 
   withProgress(message = 'Graphic in progress',
@@ -1120,13 +1125,13 @@ boxplotInput <- eventReactive( input$do, {
                  }
                })
 
-    boxp<-boxp_ +
-      geom_boxplot(fill=input$fillcol)+
-      labs(y = input$axisy, x=input$axisx) +
+    boxp <- boxp_ +
+      geom_boxplot(fill = input$fillcol)+
+      labs(y = input$axisy, x = input$axisx) +
       theme_few()+
-      theme(text=element_text(family="Times", size=9),
-            axis.text=element_text(family="Times", size=9,angle = 90),
-            axis.title=element_text(family="Times", size=12))
+      theme(text=element_text(family = "Times", size = 9),
+            axis.text = element_text(family = "Times", size = 9, angle = 90),
+            axis.title = element_text(family = "Times", size = 12))
 
 
     ggplotly(boxp) %>%
@@ -1149,32 +1154,28 @@ boxplotInput <- eventReactive( input$do, {
 
 })
 
-
 output$boxplot <- renderPlotly({
       print(boxplotInput())
 })
-
-
 
 output$download_box <- downloadHandler(
   filename = function() {
     paste(input$Filename_box,'.html',sep='')
     },
   content = function(file) {
-
     htmlwidgets::saveWidget(as_widget(boxplotInput()), file)
-}
+  }
 )
 
+# Correlation plot
 corrInput <- reactive({
-  if(input$Var3=="Environment"){
-    M<-cor(sinrep(), method =input$correlType)
+  if(input$Var2 == "Environment"){
+    M_graf <- cor(sinrep(), method =input$corrType)
   }else{
-    M<-cor(t(sinrep()), method =input$correlType)
+    M_graf <- cor(t(sinrep()), method =input$corrType)
   }
 })
 
-# Correlation plot
 corplotInput <- eventReactive( input$do_corrplot, {
   withProgress(message = 'Graphic in progress',
                detail = 'This may take a while...', value = 0, {
@@ -1189,17 +1190,15 @@ corplotInput <- eventReactive( input$do_corrplot, {
                ggtheme = ggthemes::theme_few(),
                method = "circle",
                colors = c("darkred", "white", "darkblue")) +
-      theme(text=element_text(family="Times", size=9),
-            axis.text.x=element_text(family="Times", size=9,angle = 90),
-            axis.text.y=element_text(family="Times", size=9),
-            axis.title=element_text(family="Times", size=9))
+      theme(text = element_text(family = "Times", size = 9),
+            axis.text.x = element_text(family = "Times", size = 9,angle = 90),
+            axis.text.y = element_text(family = "Times", size = 9),
+            axis.title = element_text(family = "Times", size = 9))
 })
-
 
 output$corplot <- renderPlot({
   print(corplotInput())
 })
-
 
 output$downloadcorplot <- downloadHandler(
   filename = function() {
@@ -1214,7 +1213,6 @@ output$downloadcorplot <- downloadHandler(
   }
   )
 
-
 # Correlation matrix
 cormatInput <- eventReactive( input$do_corrmat, {
   withProgress(message = 'Estimation in progress',
@@ -1224,27 +1222,23 @@ cormatInput <- eventReactive( input$do_corrmat, {
                    Sys.sleep(0.30)
                  }
                })
-  if(input$Var3=="Environment"){
-    M<-cor(sinrep(), method =input$correlType)
+  if(input$Var3 == "Environment"){
+    M <- cor(sinrep(), method = input$correlType)
   }else{
-    M<-cor(t(sinrep()), method =input$correlType)
+    M <- cor(t(sinrep()), method = input$correlType)
   }
 
-  knitr::kable(corrInput(),"html", digits = 2,full_width = F, font_size = 12) %>%
+  knitr::kable(M,"html", digits = 2,full_width = F, font_size = 12) %>%
     kable_styling(position = "center")  %>%
-    column_spec(1:ncol(corrInput()), bold = T, color = "black") %>%
-    row_spec(1:nrow(corrInput()), bold = T, color = "black")
+    column_spec(1:ncol(M), bold = T, color = "black") %>%
+    row_spec(1:nrow(M), bold = T, color = "black")
 })
 
 output$cormat<-renderText({
 print(cormatInput())
 })
 
-
-
-
 # Interaction plot
-
 datos_summ <- reactive({
   datos <-
     datafile() %>%
@@ -1264,10 +1258,10 @@ interacInput <-eventReactive( input$do_int, {
                  }
                })
 
-  if(input$Var4=="Environment"){
-    intp<-ggplot2::ggplot(data = datos_summ(), aes(x = !!sym(input$select_env), y = y, colour = !!sym(input$select_gen), group = !!sym(input$select_gen)))
+  if(input$Var4 == "Environment"){
+    intp <- ggplot2::ggplot(data = datos_summ(), aes(x = !!sym(input$select_env), y = y, colour = !!sym(input$select_gen), group = !!sym(input$select_gen)))
   }else{
-    intp<-ggplot2::ggplot(data = datos_summ(), aes(x = !!sym(input$select_gen), y = y, colour = !!sym(input$select_env), group = !!sym(input$select_env)))
+    intp <- ggplot2::ggplot(data = datos_summ(), aes(x = !!sym(input$select_gen), y = y, colour = !!sym(input$select_env), group = !!sym(input$select_env)))
   }
 
   intp <- intp +
@@ -1275,9 +1269,9 @@ interacInput <-eventReactive( input$do_int, {
     stat_summary(fun = mean,geom = "line")+
     labs(y = input$axisy_int, x=input$axisx_int)+
     theme_few() +
-    theme(text=element_text(family="Times", size=9),
-          axis.text=element_text(family="Times", size=9),
-          axis.title=element_text(family="Times", size=9))
+    theme(text=element_text(family = "Times", size = 9),
+          axis.text=element_text(family = "Times", size = 9),
+          axis.title=element_text(family = "Times", size = 9))
 
   ggplotly(intp) %>%
     config(displaylogo = FALSE,
@@ -1296,33 +1290,32 @@ interacInput <-eventReactive( input$do_int, {
              'toggleSpikelines'
            )
     )
-
 })
-
 
 output$int <- renderPlotly({
   print(interacInput())
 })
-
-
 
 output$download_int <- downloadHandler(
   filename = function() {
     paste(input$Filename_int,'.html',sep='')
     },
   content = function(file) {
-
     htmlwidgets::saveWidget(as_widget(interacInput()), file)
-}
+  }
 )
 
 
 
+####################
+#     ANOVA
+####################
+
 AnovaInput <- reactive({
   if(!is.null(input$select_rep)){
-    mod<-lm(as.numeric(pheno) ~ as.factor(env) * as.factor(gen), data = dataset())
+    mod <- lm(as.numeric(pheno) ~ as.factor(env) * as.factor(gen), data = dataset())
   }else{
-    mod<-lm(as.numeric(pheno) ~ as.factor(env) + as.factor(gen), data = dataset())
+    mod <- lm(as.numeric(pheno) ~ as.factor(env) + as.factor(gen), data = dataset())
   }
 })
 
@@ -1335,7 +1328,7 @@ output$Anova <- renderText({
                  }
                })
   if(!is.null(input$select_rep)){
-    anova<-as.data.frame(anova(AnovaInput()))
+    anova <- as.data.frame(anova(AnovaInput()))
     row.names(anova)[1:3] = c("Environment", "Genotype", "Interaction")
     options(knitr.kable.NA = '-')
   }else{
@@ -1374,14 +1367,12 @@ output$Anova2 <- renderPrint({
 
 })
 
-
-
 # Histograma de residuos
 histInput <- reactive({
-  anova<-aov(AnovaInput())
-  residuals<-as.data.frame(anova$residuals)
-  histogram <- ggplot(residuals, aes(x=anova$residuals)) +
-    geom_histogram(aes(y=..density..), colour="black", fill=input$fillhist) +
+  anova <- aov(AnovaInput())
+  residuals <- as.data.frame(anova$residuals)
+  histogram <- ggplot(residuals, aes(x = anova$residuals)) +
+    geom_histogram(aes(y=..density..), colour="black", fill = input$fillhist) +
     xlab("Residuals") +
     theme_few()
 
@@ -1405,7 +1396,6 @@ histInput <- reactive({
 
 })
 
-
 output$residual_hist <- renderPlotly({
   withProgress(message = 'Graphic in progress',
                detail = 'This may take a while...', value = 0, {
@@ -1427,17 +1417,12 @@ output$downloadHist <- downloadHandler(
 }
 )
 
-
-
-
 # qq-plot residuos
 qqnormInput <- reactive({
   anova<-aov(AnovaInput())
-  residuals<-as.data.frame(anova$residuals)
-  qqplot <-gg_qq(residuals(anova))+
+  residuals <- as.data.frame(anova$residuals)
+  qqplot <- gg_qq(residuals(anova))+
    geom_point(colour = input$fillqq)
-
-
 
   ggplotly(qqplot) %>%
     config(displaylogo = FALSE,
@@ -1458,30 +1443,26 @@ qqnormInput <- reactive({
     )
 })
 
-
 output$residual_qqnorm <- renderPlotly({
   print(qqnormInput())
   })
 
-
 output$downloadqqnorm <- downloadHandler(
   filename = function() {
-    paste(input$Filename_qq,'.html', sep='')
+    paste(input$Filename_qq,'.html', sep = '')
     },
   content = function(file) {
     htmlwidgets::saveWidget(as_widget(histInput()), file)
-}
+  }
 )
-
-
 
 # Prueba de normalidad de residuos
 observeEvent(input$do_test,{
 output$residual_test <- renderText({
-  anova<-aov(AnovaInput())
-  shapiro<-shapiro.test(residuals(anova))
+  anova <- aov(AnovaInput())
+  shapiro <- shapiro.test(residuals(anova))
 
-  if(shapiro$p.value>0.05){
+  if(shapiro$p.value > 0.05){
   sendSweetAlert(
     session = session,
     title = "Normality is verify!!",
@@ -1503,17 +1484,15 @@ output$residual_test <- renderText({
 
 # Grafico de linealidad
 linearityInput <- reactive({
-  autoplot(AnovaInput(),which =1, ncol = 1, label.size = 3,colour = input$fillhomo, smooth.colour = "black") + theme_few() +
-    theme(text=element_text(family="Times", size=12),
-          axis.text=element_text(family="Times", size=12),
-          axis.title=element_text(family="Times", size=12))
+  autoplot(AnovaInput(),which = 1, ncol = 1, label.size = 3,colour = input$fillhomo, smooth.colour = "black") + theme_few() +
+    theme(text = element_text(family = "Times", size = 12),
+          axis.text = element_text(family = "Times", size = 12),
+          axis.title = element_text(family = "Times", size = 12))
 })
 
 output$residual_linearity <- renderPlot({
   print(linearityInput())
 })
-
-
 
 output$downloadlinearity<- downloadHandler(
   filename = function() {
@@ -1528,9 +1507,9 @@ output$downloadlinearity<- downloadHandler(
   }
   )
 
-
+# Homocedasticidad
 observeEvent(input$do_leve_gen,{
-    levene<-leveneTest(pheno ~ as.factor(gen), center=mean, data = dataset())
+    levene <-leveneTest(pheno ~ as.factor(gen), center = mean, data = dataset())
 
     if(levene$"Pr(>F)"[1]>0.05){
       sendSweetAlert(
@@ -1554,7 +1533,7 @@ observeEvent(input$do_leve_gen,{
 
 
 observeEvent(input$do_leve_env,{
-    levene<-leveneTest(pheno ~ as.factor(env), center=mean, data = dataset())
+    levene <-leveneTest(pheno ~ as.factor(env), center = mean, data = dataset())
 
     if(levene$"Pr(>F)"[1]>0.05){
       sendSweetAlert(
@@ -1580,11 +1559,11 @@ observeEvent(input$do_leve_env,{
 
 # Grafico de outliers
 outliersInput <- reactive({
-  p <-autoplot(AnovaInput(), which =4, ncol = 1, label.size = 3,
+  p <- autoplot(AnovaInput(), which = 4, ncol = 1, label.size = 3,
                colour = input$fillout, smooth.colour = "black") + theme_few() +
-    theme(text=element_text(family="Times", size=12),
-          axis.text=element_text(family="Times", size=12),
-          axis.title=element_text(family="Times", size=12))
+    theme(text = element_text(family = "Times", size = 12),
+          axis.text = element_text(family = "Times", size = 12),
+          axis.title = element_text(family = "Times", size = 12))
 })
 
 output$residual_outliers <- renderPlot({
@@ -1606,20 +1585,16 @@ output$downloadoutliers <- downloadHandler(
 
 
 
-# GGE Biplot
-# output$genot <- renderUI({
-#   checkboxGroupInput(inputId = "select_gen_",
-#                      label = "Genotypes",
-#                      choices = names(datafile()))
-# })
 
+
+####################
+#   GGE Biplot
+####################
 
 modelInput <- reactive({
-  geneticae::GGEmodel(datafile(), genotype= input$select_gen, environment= input$select_env, rep = input$select_rep, response = input$select_pheno,
+  geneticae::GGEmodel(datafile(), genotype = input$select_gen, environment = input$select_env, rep = input$select_rep, response = input$select_pheno,
                       SVP = input$SVP, centering = "tester", scaling = "none")
 })
-
-
 
 plotGGEInput <- eventReactive( input$do_GGE, {
   withProgress(message = 'Graphic in progress',
@@ -1630,18 +1605,17 @@ plotGGEInput <- eventReactive( input$do_GGE, {
                  }
                })
 
-
   if(!is.null(input$select_rep)){
 
-    p <-  geneticae::GGEPlot(modelInput(), type=input$plotType, footnote = input$footnote,
-                           colGen =input$colgen, colEnv =input$colenv,colSegment=input$colsegment,
-                           titles = input$title, sizeGen=as.numeric(input$sizeGen), sizeEnv = as.numeric(input$sizeEnv),
-                           axislabels=input$axislabels,axes=input$axes)
+    p <-  geneticae::GGEPlot(modelInput(), type = input$plotType, footnote = input$footnote,
+                           colGen = input$colgen, colEnv = input$colenv, colSegment = input$colsegment,
+                           titles = input$title, sizeGen = as.numeric(input$sizeGen), sizeEnv = as.numeric(input$sizeEnv),
+                           axislabels = input$axislabels, axes = input$axes)
   }else{
-    p <-  geneticae::GGEPlot(modelInput(), type=input$plotType, footnote = input$footnote,
-                             colGen =input$colgen, colEnv =input$colenv,colSegment=input$colsegment,
-                             titles = input$title, sizeGen=as.numeric(input$sizeGen), sizeEnv = as.numeric(input$sizeEnv),
-                             axislabels=input$axislabels,axes=input$axes)
+    p <- geneticae::GGEPlot(modelInput(), type = input$plotType, footnote = input$footnote,
+                             colGen = input$colgen, colEnv = input$colenv, colSegment = input$colsegment,
+                             titles = input$title, sizeGen = as.numeric(input$sizeGen), sizeEnv = as.numeric(input$sizeEnv),
+                             axislabels = input$axislabels, axes = input$axes)
   }
 
 })
@@ -1663,10 +1637,9 @@ output$download_gge <- downloadHandler(
   }
   )
 
-
-
-
-# AMMI biplot
+####################
+#   GE Biplot
+####################
 plotAMMIInput <- eventReactive( input$do_AMMI, {
   withProgress(message = 'Graphic in progress',
                detail = 'This may take a while...', value = 0, {
@@ -1676,15 +1649,15 @@ plotAMMIInput <- eventReactive( input$do_AMMI, {
                  }
                })
   if(!is.null(input$select_rep)){
-  p <-  geneticae::rAMMI(dataset(), genotype= input$select_gen, environment= input$select_env, rep = input$select_rep, response = input$select_pheno,
-                         type=input$robustType, footnote = input$foot, colGen =input$colorgen, colEnv =input$colorenv,
-                         titles = input$tit, sizeGen=as.numeric(input$sizeGen_AMMI), sizeEnv = as.numeric(input$sizeEnv_AMMI),
-                         axislabels=input$axislabels_AMMI,axes=input$axes_AMMI)
+  p <- geneticae::rAMMI(dataset(), genotype = input$select_gen, environment = input$select_env, rep = input$select_rep, response = input$select_pheno,
+                         type = input$robustType, footnote = input$foot, colGen = input$colorgen, colEnv = input$colorenv,
+                         titles = input$tit, sizeGen = as.numeric(input$sizeGen_AMMI), sizeEnv = as.numeric(input$sizeEnv_AMMI),
+                         axislabels = input$axislabels_AMMI,axes = input$axes_AMMI)
   }else{
-  p <-  geneticae::rAMMI(dataset(), genotype= input$select_gen, environment= input$select_env, rep = NULL, response = input$select_pheno,
-                         type=input$robustType, footnote = input$foot, colGen =input$colorgen, colEnv =input$colorenv,
+  p <- geneticae::rAMMI(dataset(), genotype = input$select_gen, environment= input$select_env, rep = NULL, response = input$select_pheno,
+                         type = input$robustType, footnote = input$foot, colGen = input$colorgen, colEnv = input$colorenv,
                          titles = input$tit, sizeGen=as.numeric(input$sizeGen_AMMI), sizeEnv = as.numeric(input$sizeEnv_AMMI),
-                         axislabels=input$axislabels_AMMI,axes=input$axes_AMMI)
+                         axislabels = input$axislabels_AMMI, axes = input$axes_AMMI)
 
   }
 
@@ -1696,7 +1669,7 @@ output$plotAMMI <- renderPlot({
   print(plotAMMIInput())
 })
 
-output$download_ammi<- downloadHandler(
+output$download_ammi <- downloadHandler(
   filename = function() {
     paste(input$Filename_AMMI, '.png', sep='')
     },
@@ -1708,9 +1681,6 @@ output$download_ammi<- downloadHandler(
     ggsave(file, plot = plotAMMIInput(), device = device)
   }
   )
-
-
-
 
 }
 
