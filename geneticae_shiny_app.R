@@ -262,83 +262,6 @@ ui <- navbarPage(
              )
        )
  ),
-# ANOVA
-tabPanel("Analysis of variance",
-         tabsetPanel(
-             # ANOVA model
-             tabPanel("ANOVA" , icon = icon("table"), br(),br(),
-                      mainPanel( htmlOutput("Anova"), verbatimTextOutput("Anova2"))
-                      ),
-             # Normality assumption
-             tabPanel("Check Normality", icon = icon("bar-chart-o"),
-                      sidebarLayout(
-                           sidebarPanel( br(),
-                                strong("Histogram residuals"),
-                                pickerInput(
-                                    inputId = "fillhist",
-                                    label = "Fill color",
-                                    choices = c("orange","dimgrey", "red","lightpink","white", "blue")
-                                ),
-                                textInput("Filename_hist", "File name", value = "Histogram"),
-                                downloadButton("downloadHist", "Download"),
-                                br(), br(),
-                                strong("QQ-Plot residuals"),
-                                pickerInput(
-                                    inputId = "fillqq",
-                                    label = "Fill color",
-                                    choices = c("orange","dimgrey", "red","lightpink","white", "blue")
-                                ),
-                                textInput("Filename_qq", "File name", value = "QQPlot"),
-                                downloadButton("downloadqqnorm", "Download"), br(),br(),
-                                strong("Shapiro-Wilks normality test"),
-                                actionButton("do_test", "Run"),
-                                width=3
-                          ),
-                          mainPanel(plotlyOutput("residual_hist"), br(),
-                                    plotlyOutput("residual_qqnorm"), br(),
-                                    verbatimTextOutput("residual_test")
-                          )
-                    )
-                ),
-             # Homocedasticity assumption
-             tabPanel("Check Homoscedasticity", icon = icon("bar-chart-o"),
-                      sidebarLayout(
-                          sidebarPanel( br(),
-                              pickerInput(
-                                  inputId = "fillhomo",
-                                  label = "Fill color",
-                                  choices = c("orange","dimgrey", "red","lightpink","white", "blue")
-                              ),
-                              textInput("Filename_homo", "File name", value = "Check Homocedasticity"),
-                              downloadButton("downloadlinearity", "Download"), br(), br(),
-                              strong("Levene test for environments"),
-                              actionButton("do_leve_env", "Run"), br(), br(),
-                              strong("Levene test for genotypes"),
-                              actionButton("do_leve_gen", "Run"),
-                              width=3
-                         ),
-                      mainPanel(plotOutput("residual_linearity"))
-                      )
-             ),
-             # Outliers
-             tabPanel("Outliers", icon = icon("bar-chart-o"),
-                      sidebarLayout(
-                          sidebarPanel( br(),
-                              pickerInput(
-                                  inputId = "fillout",
-                                  label = "Fill color",
-                                  choices = c("orange","dimgrey", "red","lightpink","white", "blue")
-                              ),
-                              textInput("Filename_out", "File name", value = "Outliers"),
-                              downloadButton("downloadoutliers", "Download"),
-                              width=3
-                          ),
-                          mainPanel(plotOutput("residual_outliers"))
-                      )
-              )
-        )
-  ),
-
   # GGE biplot
   tabPanel("GGE Biplot", icon = icon("bar-chart-o"),
            sidebarLayout(
@@ -355,6 +278,9 @@ tabPanel("Analysis of variance",
                          inputId = "plotType",
                          label = "Plot type",
                          choices = c("Biplot",
+                                     "Selected Environment",
+                                     "Selected Genotype",
+                                     "Comparison of Genotype",
                                      "Which Won Where/What",
                                      "Mean vs. Stability",
                                      "Ranking Genotypes",
@@ -364,7 +290,11 @@ tabPanel("Analysis of variance",
                          status = "info",
                          animation = "rotate"
                      ),
-
+                  textInput("ME", "Environments of mega-environment:", value = "OA93"),
+                  textInput("SelectedE", "Environment selected:", value = "OA93"),
+                  textInput("SelectedG", "Genotype selected:", value = "Ann"),
+                  textInput("SelectedG1", "Genotype 1 selected:", value = "Ann"),
+                  textInput("SelectedG2", "To be compared with Genotype 2 selected:", value = "m12"),
                      hr(),
                      materialSwitch(
                        inputId = "footnote",
@@ -639,7 +569,7 @@ tabPanel("Analysis of variance",
                                    ),
                                    br(),
                                    tags$div(
-                                   tags$img(src="Exampledatasets.png", height="100%", width="100%"),
+                                   tags$img(src="dataexamples.png", height="100%", width="100%"),
                                    tags$h5(strong("Figure 2: (A)"),em("Plrv"), "dataset", strong("(B) "),em("yanwinterwheat"), "dataset"),
                                    align="center"),
                                    br(),br(),
@@ -678,7 +608,7 @@ tabPanel("Analysis of variance",
                                           align = "justify"),
                                    br(),
                                    tags$div(
-                                    tags$img(src="Boxplot_genotypes.png", height="100%", width="100%"), br(),
+                                    tags$img(src="boxplots.png", height="100%", width="100%"), br(),
                                     tags$h5(strong("Figure 4: "),"boxplot of" , strong("(A) "), "genotypes and ", strong("(B) "),
                                             "environments for", em("yanwinterwheat"), "dataset"),
                                     align="center"),
@@ -691,7 +621,7 @@ tabPanel("Analysis of variance",
                                           align = "justify"),
                                    br(),
                                    tags$div(
-                                    tags$img(src="corr_env.png", height="100%", width="100%"), br(),
+                                    tags$img(src="corrplot.png", height="100%", width="100%"), br(),
                                     tags$h5(strong("Figure 5:"),"Correlation plot between (A) genotypes and (B) environmente of",
                                             em("yanwinterwheat"), "dataset"),
                                     align="center"),
@@ -707,7 +637,7 @@ tabPanel("Analysis of variance",
                                           align = "justify"),
                                    br(),
                                    tags$div(
-                                    tags$img(src="int_plotenv.png", height="100%", width="100%"), br(),
+                                    tags$img(src="int_plot.png", height="100%", width="100%"), br(),
                                     tags$h5(strong("Figure 8:"),"Interaction plot for (A) environments through genotypes and (B)
                                             genotypes through environments of", em("yanwinterwheat"), "dataset"),
                                     align="center"),
@@ -715,43 +645,6 @@ tabPanel("Analysis of variance",
                                    width = 10
                                  )
                          ),
-                         tabPanel("Analysis of variance",
-                                 mainPanel(
-                                   h4(strong("ANOVA")),
-                                   tags$p("The phenotypic triat of interest (P) consist of environmental (E), genotypic (G) and gentype-by-environment
-                                          interaction (GEI) variation: P=E+G+GEI. If only the effects of G and E are significant
-                                          (that is, there is no GEI effect), the interaction must be ignored. Furthermre, if the genotypes were evaluated only once in each environment,
-                                          that is, there are no repetitions, the interaction could not be tested.",
-                                          "Therefore, in ", em("yanwinterwheat"), "dataset, only the genotypic and environmental effects can be tested (Figure 10).", align = "justify"),
-                                   br(),
-                                   tags$img(src="ANOVA.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 10:"),"Analysis of variance for", em("yanwinterwheat"), "dataset"),
-                                   br(),br(),
-                                   tags$p("The validity of the ANOVA conclusions depends on whether the errors have a normal distribution with a zero mean and constant variance.
-                                        Three tabs: Check normality, Check homocedasticity and Outliers allow verifying the above assumptions. The graphics to verify the assumptions
-                                        can be downloaded using the Download button in the corresponding tab. The normality  can be verified graphically with a histogram and a normal probability
-                                        graph (Figure 11). Also, shapiro-wilks test can be performed (Figure 12).", align = "justify"),
-                                   br(),
-                                   tags$img(src="Normalidad.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 11:"),"Normality errors asumption for", em("yanwinterwheat"), "dataset"),
-                                   br(),br(),
-                                   tags$img(src="Normalidad2.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 12:"),"Shapiro-wilks test for", em("yanwinterwheat"), "dataset"),
-                                   br(),
-                                   tags$p("Homoskedasticity can be tested with residuals vs. predicted values plot (Figure 13), as well as with levene test for both genotypes and environments (Figure 14).", align = "justify"),
-                                   br(),
-                                   tags$img(src="Homocedasticidad.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 13:"),"Homoskedasticity of errors for", em("yanwinterwheat"), "dataset"),
-                                   br(),br(),
-                                   tags$img(src="levene.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 14:"),"Levene test for", em("yanwinterwheat"), "dataset"),
-                                   br(),br(),
-                                   tags$p("Finally, ANOVA is not robust in presence of atypical observations, therefore graphs to detect if outliers are included (Figure 15).", align = "justify"),
-                                   br(),
-                                   tags$img(src="Outliers.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 15:"),"Outliers in", em("yanwinterwheat"), "dataset"),
-                                   width = 10
-                                 )),
                          tabPanel("GGE Biplot",
                                  mainPanel(
                                    h4(strong("Site regression model")),
@@ -799,6 +692,12 @@ tabPanel("Analysis of variance",
                                           The length of the environment vectors is a measure of the environment’s ability to discriminate between crops.",
                                          align = "justify"),
                                    br(),
+                                   tags$div(
+                                     tags$img(src="biplot_GGE.png", height="100%", width="100%"), br(),
+                                     tags$h5(strong("Figure 8:"),"Interaction plot for (A) environments through genotypes and (B)
+                                            genotypes through environments of", em("yanwinterwheat"), "dataset"),
+                                     align="center"),
+                                   br(),
                                    tags$p("If Which Won Where/What is indicate in plot type, and the other options are
                                             left by default the polygonal view of the GGE biplots is provides (Figure 1).The polygonal view of the GGE
                                             biplots provides an effective way to visualize the which-won-where pattern of MET data (Figure 6), allowing
@@ -808,6 +707,12 @@ tabPanel("Analysis of variance",
                                             most responsive cultivars; all other cultivars are less responsive in their respective directions.",
                                           align = "justify"),
                                    br(),
+                                   tags$div(
+                                     tags$img(src="GGE_WhichWonWhereWhat.png", height="100%", width="100%"), br(),
+                                     tags$h5(strong("Figure 8:"),"Interaction plot for (A) environments through genotypes and (B)
+                                            genotypes through environments of", em("yanwinterwheat"), "dataset"),
+                                     align="center"),
+                                   br(),
                                    tags$p("The dotted lines are perpendicular to the polygon sides and divide the biplot into mega-environments,
                                            each of which has a vertex cultivar, which is the one with the highest yield (phenotype) in all environments
                                            found in it. OA93 and KE93 are in the same sector, separated from the rest of the biplot by two perpendicular
@@ -816,6 +721,11 @@ tabPanel("Analysis of variance",
                                            the sectors with Ena, Kat, and Luc as vertex cultivars. This indicates that these vertex cultivars were not the best
                                            in any of the test environments. Moreover, these cultivars were the poorest in some or all of the environments.",
                                           align = "justify"),
+                                   br(),
+                                   strong("DE ACA PARA ABAJO EN REALIDAD HABRIA QUE SELECCIONAR LOS AMBIENTES DE UN MEGA AMBIENTE Y SOLO TRABAJAR
+                                          CON ESOS, PERO LA VERDAD ES QUE SE ME COMPLICA, POR ESO TAMPOCO PUSE LA COMPARACION DE DOS GENOTIPOS, EL
+                                          ORDENAMIENTO SEGUN UN GENOTIPO Y SEGUN UN AMBIENTE - PRIMERAS APLICACIONES DE LA VIGNETTE... no se como hacerlo...
+                                          si te llega a salir barbaro, sino queda asi!"),
                                    br(),
                                    tags$p("Selecting cultivars within each mega-environments is an issue among plant breeders. Figure 6 clearly suggests that
                                           Zav is the best cultivar for OA93 and KE93, and Fun is the best cultivar for the other locations. However, breeders
@@ -838,6 +748,12 @@ tabPanel("Analysis of variance",
                                           Cas, Zav, Reb, Del, Ari, and Kar, were more stable.",
                                           align = "justify"),
                                    br(),
+                                   tags$div(
+                                     tags$img(src="GGE_mean_stab.png", height="100%", width="100%"), br(),
+                                     tags$h5(strong("Figure 8:"),"Interaction plot for (A) environments through genotypes and (B)
+                                            genotypes through environments of", em("yanwinterwheat"), "dataset"),
+                                     align="center"),
+                                   br(),
                                    tags$p("Figure 8 compares the cultivars to the “ideal” one with the highest yield and absolute stability.
                                           This ideal cultivar is represented by a small circle and is used as a reference, as it rarely exists.
                                           The distance between cultivars and the ideal one can be used as a measure of convenience. Concentric
@@ -845,6 +761,11 @@ tabPanel("Analysis of variance",
                                           and therefore the most desirable one, followed by Cas and Hay, which in turn are followed by Rum, Ham,
                                           Rub, Zav, Del and Reb, etc.",
                                           align = "justify"),
+                                   br(),
+                                   tags$div(
+                                     tags$h5(strong("Figure 8:"),"Interaction plot for (A) environments through genotypes and (B)
+                                            genotypes through environments of", em("yanwinterwheat"), "dataset"),
+                                     align="center"),
                                    br(),
                                    tags$p(" Although METs are performed to study cultivars, they are equally useful for the analysis of the
                                           environments. This includes several aspects: (i) evaluating whether the target region belongs
@@ -866,16 +787,19 @@ tabPanel("Analysis of variance",
                                           to understand the interrelationship between test environments.",
                                           align = "justify"),
                                    br(),
+                                   tags$div(
+                                     tags$img(src="GGE_RankingEnvironments.png", height="100%", width="100%"), br(),
+                                     tags$h5(strong("Figure 8:"),"Interaction plot for (A) environments through genotypes and (B)
+                                            genotypes through environments of", em("yanwinterwheat"), "dataset"),
+                                     align="center"),
+                                   br(),
                                    tags$p(" Discrimination ability as well as representativeness with respect to the target environment are
                                           fundamental measures for an environment. An ideal test environment should be both discriminating and
                                           representative. If it does not have the ability to discriminate, it does not provide information on
                                           cultivars and is therefore of no use. At the same time, if it is not representative, not only does it
                                           lack usefulness but it can also provide biased information on the evaluated cultivars.",
                                           align = "justify"),
-                                   br(),
-                                   strong("ESTO CREO Q VUELA... TENDRIA Q PONER PARA QUE SELECCIONEN LOS AMBIENTES DEL MEGA AMBIENTE, NO SE...
-                                          MEDIO DIFICIL... CREO Q QUEDARIA PARA UNA PROXIMA VERSION... LAS VISTAS DEL BIPLOT QUE REQUIEREN DE
-                                          SELECCIONAR ALGO NO LAS PUSE PARA NO COMPLICARME LA VIDA... "),
+
                                    tags$p("To visualize these measurements, an average environment coordinate is defined and the center of
                                           a set of concentric circles represents the ideal environment. Figure 10 shows the GGE biplots view
                                           for the mega-environment with BH93, EA93, HW93, ID93, NN93, RN93 and WP93. The angle between the
@@ -887,8 +811,11 @@ tabPanel("Analysis of variance",
                                           RN93 and BH93 were the least desirable test environments of this mega-environment.",
                                           align = "justify"),
                                    br(),
-                                   tags$img(src="biplot_GGE.png", height="100%", width="100%"), br(),
-                                   tags$h5(strong("Figure 16:"),"Basic GGE biplot for", em("yanwinterwheat"), "dataset"),
+                                   tags$div(
+                                     tags$img(src="GGE_RelationshipAmongEnvironments.png", height="100%", width="100%"), br(),
+                                     tags$h5(strong("Figure 8:"),"Interaction plot for (A) environments through genotypes and (B)
+                                            genotypes through environments of", em("yanwinterwheat"), "dataset"),
+                                     align="center"),
                                    br(),
                                    width = 10
                                  )
@@ -1306,294 +1233,29 @@ output$download_int <- downloadHandler(
 )
 
 
-
-####################
-#     ANOVA
-####################
-
-AnovaInput <- reactive({
-  if(!is.null(input$select_rep)){
-    mod <- lm(as.numeric(pheno) ~ as.factor(env) * as.factor(gen), data = dataset())
-  }else{
-    mod <- lm(as.numeric(pheno) ~ as.factor(env) + as.factor(gen), data = dataset())
-  }
-})
-
-output$Anova <- renderText({
-  withProgress(message = 'Estimation in progress',
-               detail = 'This may take a while...', value = 0, {
-                 for (i in 1:20) {
-                   incProgress(1/20)
-                   Sys.sleep(0.25)
-                 }
-               })
-  if(!is.null(input$select_rep)){
-    anova <- as.data.frame(anova(AnovaInput()))
-    row.names(anova)[1:3] = c("Environment", "Genotype", "Interaction")
-    options(knitr.kable.NA = '-')
-  }else{
-    anova<-as.data.frame(anova(AnovaInput()))
-    row.names(anova)[1:2] = c("Environment", "Genotype")
-    options(knitr.kable.NA = '-')
-  }
-  knitr::kable(anova, full_width = F, font_size = 16, col.names = c("Df", "Sum Sq", "Mean Sq", "F-Value", "P-
-          Value"), caption = 'Two-way ANOVA table') %>%
-    kable_styling(position = "center") %>%
-    column_spec(1, bold = T, color = "black")
-})
-
-output$Anova2 <- renderPrint({
-
-  if(!is.null(input$select_rep)){
-    showModal(modalDialog(
-      "The interaction effect can be tested since there are repetitions in the dataset",
-      footer = list(
-        actionButton("ok", "OK")
-      )
-    ))
-  }else{
-    showModal(modalDialog(
-      "The interaction effect can not be tested since there aren´t repetitions in the dataset",
-      footer = list(
-        actionButton("ok", "OK")
-      )
-    ))
-  }
-
-  observeEvent(input$ok,
-               removeModal()
-  )
-
-
-})
-
-# Histograma de residuos
-histInput <- reactive({
-  anova <- aov(AnovaInput())
-  residuals <- as.data.frame(anova$residuals)
-  histogram <- ggplot(residuals, aes(x = anova$residuals)) +
-    geom_histogram(aes(y=..density..), colour="black", fill = input$fillhist) +
-    xlab("Residuals") +
-    theme_few()
-
-  ggplotly(histogram) %>%
-    config(displaylogo = FALSE,
-           modeBarButtonsToRemove = list(
-             'sendDataToCloud',
-             'autoScale2d',
-             'resetScale2d',
-             'hoverClosestCartesian',
-             'hoverCompareCartesian',
-             'zoom2d',
-             'pan2d',
-             'select2d',
-             'lasso2d',
-             'zoomIn2d',
-             'zoomOut2d',
-             'toggleSpikelines'
-           )
-    )
-
-})
-
-output$residual_hist <- renderPlotly({
-  withProgress(message = 'Graphic in progress',
-               detail = 'This may take a while...', value = 0, {
-                 for (i in 1:20) {
-                   incProgress(1/20)
-                   Sys.sleep(0.30)
-                 }
-               })
-  print(histInput())
-  })
-
-
-output$downloadHist <- downloadHandler(
-  filename = function() {
-    paste(input$Filename_hist,'.html', sep='')
-    },
-  content = function(file) {
-    htmlwidgets::saveWidget(as_widget(histInput()), file)
-}
-)
-
-# qq-plot residuos
-qqnormInput <- reactive({
-  anova<-aov(AnovaInput())
-  residuals <- as.data.frame(anova$residuals)
-  qqplot <- gg_qq(residuals(anova))+
-   geom_point(colour = input$fillqq)
-
-  ggplotly(qqplot) %>%
-    config(displaylogo = FALSE,
-           modeBarButtonsToRemove = list(
-             'sendDataToCloud',
-             'autoScale2d',
-             'resetScale2d',
-             'hoverClosestCartesian',
-             'hoverCompareCartesian',
-             'zoom2d',
-             'pan2d',
-             'select2d',
-             'lasso2d',
-             'zoomIn2d',
-             'zoomOut2d',
-             'toggleSpikelines'
-           )
-    )
-})
-
-output$residual_qqnorm <- renderPlotly({
-  print(qqnormInput())
-  })
-
-output$downloadqqnorm <- downloadHandler(
-  filename = function() {
-    paste(input$Filename_qq,'.html', sep = '')
-    },
-  content = function(file) {
-    htmlwidgets::saveWidget(as_widget(histInput()), file)
-  }
-)
-
-# Prueba de normalidad de residuos
-observeEvent(input$do_test,{
-output$residual_test <- renderText({
-  anova <- aov(AnovaInput())
-  shapiro <- shapiro.test(residuals(anova))
-
-  if(shapiro$p.value > 0.05){
-  sendSweetAlert(
-    session = session,
-    title = "Normality is verify!!",
-    text = paste("Shapiro-Wilk statistic:", round(shapiro$statistic,2),"p-value:",round(shapiro$p.value,4),
-                 ",\n", "5% significance level"),
-    type = "success"
-  )
-  }else{
-    sendSweetAlert(
-      session = session,
-      title = "Normality is not verify",
-      text = paste("Shapiro-Wilk statistic:", round(shapiro$statistic,2),"p-value:",round(shapiro$p.value,4),
-                   ",\n", "5% significance level"),
-      type = "error"
-    )
-}
-  })
-})
-
-# Grafico de linealidad
-linearityInput <- reactive({
-  autoplot(AnovaInput(),which = 1, ncol = 1, label.size = 3,colour = input$fillhomo, smooth.colour = "black") + theme_few() +
-    theme(text = element_text(family = "Times", size = 12),
-          axis.text = element_text(family = "Times", size = 12),
-          axis.title = element_text(family = "Times", size = 12))
-})
-
-output$residual_linearity <- renderPlot({
-  print(linearityInput())
-})
-
-output$downloadlinearity<- downloadHandler(
-  filename = function() {
-    paste(input$Filename_homo, '.png', sep='')
-    },
-  content = function(file) {
-    device <- function(..., width, height) {
-      grDevices::png(..., width = width, height = height,
-                     res = 300, units = "in")
-    }
-    ggsave(file, plot = linearityInput(), device = device)
-  }
-  )
-
-# Homocedasticidad
-observeEvent(input$do_leve_gen,{
-    levene <-leveneTest(pheno ~ as.factor(gen), center = mean, data = dataset())
-
-    if(levene$"Pr(>F)"[1]>0.05){
-      sendSweetAlert(
-        session = session,
-        title = "Homogeneity of variance between genotype is verify!!",
-        text = paste("Levene statistic:", round(levene$"F value"[1],2),"p-value:",round(levene$"Pr(>F)"[1],4),
-                     "\n", "5% significance level"),
-        type = "success"
-      )
-    }else{
-      sendSweetAlert(
-        session = session,
-        title = "Homogeneity of variance between genotype is not verify!!",
-        text = paste("Levene statistic:", round(levene$"F value"[1],2),"p-value:",round(levene$"Pr(>F)"[1],4),
-                     "\n", "5% significance level"),
-        type = "error"
-      )
-    }
-})
-
-
-
-observeEvent(input$do_leve_env,{
-    levene <-leveneTest(pheno ~ as.factor(env), center = mean, data = dataset())
-
-    if(levene$"Pr(>F)"[1]>0.05){
-      sendSweetAlert(
-        session = session,
-        title = "Homogeneity of variance between environments is verify!!",
-        text = paste("Levene statistic:", round(levene$"F value"[1],2),"p-value:",round(levene$"Pr(>F)"[1],4),
-                     "\n", "5% significance level"),
-        type = "success"
-      )
-    }else{
-      sendSweetAlert(
-        session = session,
-        title = "Homogeneity of variance between environments is verify!!",
-        text = paste("Levene statistic:", round(levene$"F value"[1],2),"p-value:",round(levene$"Pr(>F)"[1],4),
-                     "\n", "5% significance level"),
-        type = "error"
-      )
-    }
-})
-
-
-
-
-# Grafico de outliers
-outliersInput <- reactive({
-  p <- autoplot(AnovaInput(), which = 4, ncol = 1, label.size = 3,
-               colour = input$fillout, smooth.colour = "black") + theme_few() +
-    theme(text = element_text(family = "Times", size = 12),
-          axis.text = element_text(family = "Times", size = 12),
-          axis.title = element_text(family = "Times", size = 12))
-})
-
-output$residual_outliers <- renderPlot({
-  print(outliersInput())
-})
-
-output$downloadoutliers <- downloadHandler(
-  filename = function() {
-    paste(input$Filename_out, '.png', sep='')
-    },
-  content = function(file) {
-    device <- function(..., width, height) {
-      grDevices::png(..., width = width, height = height,
-                     res = 300, units = "in")
-    }
-    ggsave(file, plot = outliersInput(), device = device)
-  }
-  )
-
-
-
-
-
 ####################
 #   GGE Biplot
 ####################
 
+datafile_ME <- reactive({
+
+  ME <- dataset() %>%
+    filter(env == input$ME) %>%
+    as.data.frame()
+
+})
+
+
 modelInput <- reactive({
-  geneticae::GGEmodel(datafile(), genotype = input$select_gen, environment = input$select_env, rep = input$select_rep, response = input$select_pheno,
-                      SVP = input$SVP, centering = "tester", scaling = "none")
+
+  if(input$plotType %in% c("Mean vs. Stability","Ranking Genotypes","Relationship Among Environments","Ranking Environments")){
+
+    geneticae::GGEmodel(datafile_ME(), genotype = input$select_gen, environment = input$select_env, rep = input$select_rep, response = input$select_pheno,
+                        SVP = input$SVP, centering = "tester", scaling = "none")
+  }else{
+    geneticae::GGEmodel(datafile(), genotype = input$select_gen, environment = input$select_env, rep = input$select_rep, response = input$select_pheno,
+                        SVP = input$SVP, centering = "tester", scaling = "none")
+  }
 })
 
 plotGGEInput <- eventReactive( input$do_GGE, {
@@ -1605,12 +1267,25 @@ plotGGEInput <- eventReactive( input$do_GGE, {
                  }
                })
 
-  if(!is.null(input$select_rep)){
+  if(input$plotType=="Selected Environment"){
 
-    p <-  geneticae::GGEPlot(modelInput(), type = input$plotType, footnote = input$footnote,
+    p <-  geneticae::GGEPlot(modelInput(), type = input$plotType, selectedE = input$SelectedE, footnote = input$footnote,
                            colGen = input$colgen, colEnv = input$colenv, colSegment = input$colsegment,
                            titles = input$title, sizeGen = as.numeric(input$sizeGen), sizeEnv = as.numeric(input$sizeEnv),
                            axislabels = input$axislabels, axes = input$axes)
+  } else if(input$plotType=="Selected Genotype"){
+
+    p <-  geneticae::GGEPlot(modelInput(), type = input$plotType, selectedG = input$SelectedG, footnote = input$footnote,
+                             colGen = input$colgen, colEnv = input$colenv, colSegment = input$colsegment,
+                             titles = input$title, sizeGen = as.numeric(input$sizeGen), sizeEnv = as.numeric(input$sizeEnv),
+                             axislabels = input$axislabels, axes = input$axes)
+
+  } else if(input$plotType=="Comparison of Genotype"){
+
+    p <-  geneticae::GGEPlot(modelInput(), type = input$plotType, selectedG1 = input$SelectedG1, selectedG2 = input$SelectedG2,
+                             footnote = input$footnote, colGen = input$colgen, colEnv = input$colenv, colSegment = input$colsegment,
+                             titles = input$title, sizeGen = as.numeric(input$sizeGen), sizeEnv = as.numeric(input$sizeEnv),
+                             axislabels = input$axislabels, axes = input$axes)
   }else{
     p <- geneticae::GGEPlot(modelInput(), type = input$plotType, footnote = input$footnote,
                              colGen = input$colgen, colEnv = input$colenv, colSegment = input$colsegment,
