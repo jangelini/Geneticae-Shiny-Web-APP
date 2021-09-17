@@ -292,9 +292,9 @@ ui <- navbarPage(
                      ),
                   textInput("ME", "Environments of mega-environment:", value = "OA93"),
                   textInput("SelectedE", "Environment selected:", value = "OA93"),
-                  textInput("SelectedG", "Genotype selected:", value = "Ann"),
-                  textInput("SelectedG1", "Genotype 1 selected:", value = "Ann"),
-                  textInput("SelectedG2", "To be compared with Genotype 2 selected:", value = "m12"),
+                  textInput("SelectedG", "Genotype selected:", value = "Kat"),
+                  textInput("SelectedG1", "Genotype 1 selected:", value = "Kat"),
+                  textInput("SelectedG2", "To be compared with Genotype 2 selected:", value = "Cas"),
                      hr(),
                      materialSwitch(
                        inputId = "footnote",
