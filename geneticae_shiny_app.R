@@ -79,14 +79,14 @@ gg_qq <- function(x, distribution = "norm", ..., line.estimate = NULL, conf = 0.
 ui <- navbarPage(
   title=HTML('<span style="font-family: Lobste, cursive;font-size:175%;color:white;font-weight:bold;">Geneticae APP</span></a>'),
   theme = shinytheme("united"),
-  # The data
-  tabPanel("The data",
+  # Data
+  tabPanel("Data",
            tabsetPanel(
                 # Import a dataset
-                 tabPanel("User data", icon = icon("table"),
+                 tabPanel("Upload data", icon = icon("table"),
                           sidebarPanel(
                                 csvFileInput("datafile", "User data (.csv format)"), br(),
-                                tags$p("Select the column name that containts:"),
+                                tags$p("Select the column name that contains:"),
                                 uiOutput("select_gen"),
                                 uiOutput("select_env"),
                                 uiOutput("select_rep"),
@@ -97,18 +97,18 @@ ui <- navbarPage(
                         ),
                  # Examples dataset
                  tabPanel(strong("Example datasets"), icon = icon("table"),
-                          sidebarPanel(br(), strong("Example without repetitions"), br(),
-                                actionButton("example_withoutrep", "Show"), br(), br(),
-                                strong("Download sample dataset"),
-                                textInput("Filename1", "File name", value = "Example without repetitions"),
-                                downloadButton("downloadexample_withoutrep", "without repetitions"),
-                                br(), br(), br(),
-                                strong("Example with repetitions"),
-                                br(),
-                                actionButton("example_withrep", "Show"), br(), br(),
-                                strong("Download sample dataset"),
-                                textInput("Filename2", "File name", value = "Example with repetitions"),
-                                downloadButton("downloadexample_withrep", "with repetitions"),
+                          sidebarPanel(br(),
+                                prettyRadioButtons(
+                                   inputId = "example_dataset",
+                                   label = "Data example",
+                                   choices = c("without repetitions", "with repetitions"),
+                                   icon = icon("check"),
+                                   status = "info",
+                                   animation = "rotate"
+                                ),
+                                actionButton("show_exampledataset", "Show"), br(), br(),
+                                textInput("Filename1", "Choose file name", value = "Example dataset"),
+                                downloadButton("downloadexample", "Download"),
                                 width = 3
                                 ),
                           mainPanel(htmlOutput("show_example"), width=8)
@@ -269,7 +269,7 @@ ui <- navbarPage(
                   prettyRadioButtons(
                     inputId = "SVP",
                     label = "SVP type",
-                    choices = c("symmetrical","row", "column","dual"),
+                    choices = c("symmetrical","row", "column"),
                     icon = icon("check"),
                     status = "info",
                     animation = "rotate"
@@ -290,11 +290,34 @@ ui <- navbarPage(
                          status = "info",
                          animation = "rotate"
                      ),
-                  textInput("ME", "Environments of mega-environment:", value = "OA93"),
-                  textInput("SelectedE", "Environment selected:", value = "OA93"),
-                  textInput("SelectedG", "Genotype selected:", value = "Kat"),
-                  textInput("SelectedG1", "Genotype 1 selected:", value = "Kat"),
-                  textInput("SelectedG2", "To be compared with Genotype 2 selected:", value = "Cas"),
+                  # Esto solo se muestra si distr_media se elige en Normal:
+                  conditionalPanel(condition = 'input.plotType == "Selected Environment"',
+                                   pickerInput('SelectedE','Environment:',
+                                               options = list(`actions-box` = TRUE, size = 10), multiple = FALSE,
+                                               choices = NULL)
+                                   ),
+                  conditionalPanel(condition = 'input.plotType == "Mean vs. Stability" ||
+                                                input.plotType == "Ranking Genotypes"  ||
+                                                input.plotType == "Relationship Among Environments" ||
+                                                input.plotType == "Ranking Environments"',
+                                   pickerInput('ME','Environments inside the mega-environment:',
+                                               options = list(`actions-box` = TRUE, size = 10), multiple = TRUE,
+                                               choices = NULL)
+                                  ),
+                  conditionalPanel(condition = 'input.plotType == "Selected Genotype"',
+                                   pickerInput('SelectedG','Genotype:',
+                                               options = list(`actions-box` = TRUE, size = 10), multiple = FALSE,
+                                               choices = NULL)
+                                  ),
+
+                  conditionalPanel(condition = 'input.plotType == "Comparison of Genotype"',
+                                   pickerInput('SelectedG1','Genotype 1:',
+                                               options = list(`actions-box` = TRUE, size = 10), multiple = FALSE,
+                                               choices = NULL),
+                                   pickerInput('SelectedG2','Genotype 2',
+                                               options = list(`actions-box` = TRUE, size = 10), multiple = FALSE,
+                                               choices = NULL)
+                                   ),
                      hr(),
                      materialSwitch(
                        inputId = "footnote",
@@ -336,10 +359,13 @@ ui <- navbarPage(
                        label = "Segment color",
                        choices = c("dimgrey", "red", "black")
                       ),
-                      selectInput("sizeGen", "Genotype marker size:", choices = c(4,0,1,2,3,5,6,7,8,9,10)),
-                      selectInput("sizeEnv", "Environment marker size:", choices = c(4,0,1,2,3,5,6,7,8,9,10)),
+                    sliderInput("sizeGen",
+                              "Genotype marker size:",
+                              min = 0,  max = 10,  value = 4),
+                    sliderInput("sizeEnv",
+                              "Environment marker size:",
+                              min = 0,  max = 10,  value = 4),
                      actionButton("do_GGE", "Run"), br(), br(),
-
                     br(), br(),
                     textInput("Filename_GGE", "File name", value = "GGE Biplot"),
                     downloadButton("download_gge", "Download"),
@@ -396,8 +422,12 @@ ui <- navbarPage(
                        label = "Environment color",
                        choices = c("dimgrey", "red", "black")
                    ),
-               selectInput("sizeGen_AMMI", "Genotype marker size:", choices = c(4,0,1,2,3,5,6,7,8,9,10)),
-               selectInput("sizeEnv_AMMI", "Environment marker size:", choices = c(4,0,1,2,3,5,6,7,8,9,10)),
+               sliderInput("sizeGen_AMMI",
+                           "Genotype marker size:",
+                           min = 0,  max = 10,  value = 4),
+               sliderInput("sizeEnv_AMMI",
+                           "Environment marker size:",
+                           min = 0,  max = 10,  value = 4),
                actionButton("do_AMMI", "Run"), br(), br(),
                textInput("Filename_AMMI", "File name", value = "AMMI Biplot"),
                downloadButton("download_ammi", "Download"),
@@ -410,6 +440,8 @@ ui <- navbarPage(
   navbarMenu("Help",icon = icon("question-circle"),
              tabPanel("Getting Started",
                       mainPanel(
+                        tags$h2(strong("Getting Started")),
+                        br(),
                         tags$h4(strong("Motivation")),
                         tags$div(
                             tags$p("Understanding the relationship between crops performance and environment is a
@@ -1001,45 +1033,37 @@ example_withrep <- reactive({
   data_withrep <- plrv
 })
 
+
 # Show example dataset
-observeEvent( input$example_withoutrep,
+exampleInput <- eventReactive(input$show_exampledataset, {
 
-output$show_example <- renderText({
+    if(input$example_dataset == "without repetitions"){
+      data_example <- example_withoutrep()
+    }else{
+      data_example <- example_withrep()
+    }
 
-  knitr::kable(example_withoutrep(), font_size = 12,
-               caption = "Dataset example without repetitions") %>%
-    kable_styling(position = "center")
-
-
-})
-)
-
-observeEvent(input$example_withrep,
-output$show_example <- renderText({
-  knitr::kable(example_withrep(), font_size = 12,
-               caption = "Dataset example with repetitions") %>%
+  knitr::kable(data_example, font_size = 12) %>%
     kable_styling(position = "center")
 })
-)
 
+output$show_example <- renderText({
+  print(exampleInput())
+})
+
+
+#
 # Downloadable csv of sample dataset
-output$downloadexample_withoutrep <- downloadHandler(
+output$downloadexample <- downloadHandler(
   filename = function() {
     paste(input$Filename1, '.csv', sep = '')
   },
   content = function(file) {
-    write.csv(example_withoutrep(), file, row.names = FALSE)
+    write.csv(example_withoutrep(), file, row.names = FALSE, quote = FALSE)
   }
 )
 
-output$downloadexample_withrep <- downloadHandler(
-  filename = function() {
-    paste(input$Filename2, '.csv', sep = '')
-  },
-  content = function(file) {
-    write.csv(example_withrep(), file, row.names = FALSE)
-  }
-)
+
 
 ####################
 # Preprocessing user dataset
@@ -1269,13 +1293,56 @@ output$download_int <- downloadHandler(
 #   GGE Biplot
 ####################
 
-datafile_ME <- reactive({
-
-  ME <- dataset() %>%
-    filter(env == input$ME) %>%
-    as.data.frame()
-
+# Environments inside mega-environment
+choices_ME <- reactive({
+  datafile() %>%
+    select(input$select_env) %>%
+    unique()
 })
+
+observe({updatePickerInput(session, 'ME', choices = choices_ME())})
+
+datafile_ME <- reactive({
+    datafile() %>%
+    filter(!!sym(input$select_env) %in% input$ME) %>%
+    as.data.frame()
+})
+
+# Selection of environment
+choices_E <- reactive({
+  datafile() %>%
+    select(input$select_env) %>%
+    unique()
+})
+
+observe({updatePickerInput(session, 'SelectedE', choices = choices_E())})
+
+# Selection of genotype
+choices_G <- reactive({
+  datafile() %>%
+    select(input$select_gen) %>%
+    unique()
+})
+
+observe({updatePickerInput(session, 'SelectedG', choices = choices_G())})
+
+# Selection of genotype 1
+choices_G1 <- reactive({
+  datafile() %>%
+    select(input$select_gen) %>%
+    unique()
+})
+
+observe({updatePickerInput(session, 'SelectedG1', choices = choices_G1())})
+
+# Selection of genotype 2
+choices_G2 <- reactive({
+  datafile() %>%
+    select(input$select_gen) %>%
+    unique()
+})
+
+observe({updatePickerInput(session, 'SelectedG2', choices = choices_G2())})
 
 
 modelInput <- reactive({

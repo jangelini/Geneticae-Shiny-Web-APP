@@ -6,11 +6,12 @@ csvFileInput <- function(id, label = "CSV file") {
 
   tagList(
     fileInput(ns("file"), label),
-    checkboxInput(ns("heading"), "Has heading"),
-    selectInput(ns("sep"), "Separation", c(
+    checkboxInput(ns("heading"), "Heading in first row"),
+    selectInput(ns("sep"), "Values separated by", c(
       "None" = "",
       "Comma" = ",",
-      "Semicolon" = ";"
+      "Semicolon" = ";",
+      "tabs"="\t"
     ))
   )
 }
