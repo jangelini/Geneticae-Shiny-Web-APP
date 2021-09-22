@@ -96,7 +96,7 @@ ui <- navbarPage(
                           mainPanel(dataTableOutput("table"), width=8)
                         ),
                  # Examples dataset
-                 tabPanel(strong("Examples dataset"), icon = icon("table"),
+                 tabPanel(strong("Example datasets"), icon = icon("table"),
                           sidebarPanel(br(), strong("Example without repetitions"), br(),
                                 actionButton("example_withoutrep", "Show"), br(), br(),
                                 strong("Download sample dataset"),
@@ -132,7 +132,7 @@ ui <- navbarPage(
                                       )%>%
                                     helper(type = "inline",
                                            title = "Inline Help",
-                                           content = c("Select if you want to plot the phenotypic trait across genotypes or environments"),
+                                           content = c("Choose if you want to compare the phenotypic trait between genotypes or between environments."),
                                            size = "m"),
                                   pickerInput(
                                       inputId = "fillcol",
@@ -148,7 +148,7 @@ ui <- navbarPage(
                                   textInput("Filename_box", "File name", value = "Boxplot")%>%
                                     helper(type = "inline",
                                            title = "Inline Help",
-                                           content = c("a <b>.HTML</b> file will be download"),
+                                           content = c("An <b>.html</b> file will be downloaded."),
                                            size = "m"),
                                   downloadButton("download_box", "Download"),
                                   width=3
@@ -170,28 +170,28 @@ ui <- navbarPage(
                                       )%>%
                                     helper(type = "inline",
                                            title = "Inline Help",
-                                           content = c("Select if you want to plot the phenotypic trait correlations between genotypes or environments"),
+                                           content = c("Choose if you want to plot the phenotypic trait correlations between genotypes or environments."),
                                            size = "m"),
                                   prettyRadioButtons(
                                       inputId = "corrType",
                                       label = "Correlation index",
-                                      choices = c("spearman", "pearson"),
+                                      choices = c("Spearman", "Pearson"),
                                       icon = icon("check"),
                                       status = "info",
                                       animation = "rotate"
                                       )%>%
                                     helper(type = "inline",
                                            title = "Inline Help",
-                                           content = c("Indicate which correlation coefficient is to be computed"),
+                                           content = c("Choose a correlation coefficient to be computed."),
                                            size = "m"),
                                   actionButton("do_corrplot", "Run"), br(), br(),
                               br(),
                               textInput("Filename3", "File name", value = "Correlation plot")%>%
-                                helper(icon = "exclamation",
-                                       colour = "red",
+                                helper(#icon = "exclamation",
+                                       #colour = "red",
                                        type = "inline",
                                        title = "Inline Help",
-                                       content = c("a <b>.png</b> file will be download"),
+                                       content = c("A <b>.png</b> file will be downloaded."),
                                        size = "s"),
                               downloadButton("downloadcorplot", "Download"),
                               width=3
@@ -204,7 +204,7 @@ ui <- navbarPage(
                             sidebarPanel(
                                 prettyRadioButtons(
                                     inputId = "Var3",
-                                    label = "Obtain for...",
+                                    label = "Calcullate for...",
                                     choices = c("Environment", "Genotype"),
                                     icon = icon("check"),
                                     status = "info",
@@ -212,19 +212,19 @@ ui <- navbarPage(
                                     )%>%
                                   helper(type = "inline",
                                          title = "Inline Help",
-                                         content = c("Select if you want to estimate the phenotypic trait correlations between genotypes or environments"),
+                                         content = c("Choose if you want to estimate the phenotypic trait correlations between genotypes or environments."),
                                          size = "m"),
                                 prettyRadioButtons(
                                     inputId = "correlType",
                                     label = "Correlation index",
-                                    choices = c("spearman","pearson"),
+                                    choices = c("Spearman","Pearson"),
                                     icon = icon("check"),
                                     status = "info",
                                     animation = "rotate"
                                     )%>%
                                   helper(type = "inline",
                                          title = "Inline Help",
-                                         content = c("Indicate which correlation coefficient is to be computed"),
+                                         content = c("Choose a correlation coefficient to be computed."),
                                          size = "m"),
                                 actionButton("do_corrmat", "Run"), br(), br(),
                                 width=3),
@@ -245,7 +245,7 @@ ui <- navbarPage(
                                     )%>%
                                     helper(type = "inline",
                                            title = "Inline Help",
-                                           content = c("Select if you want to plot the phenotypic trait between genotypes or environments"),
+                                           content = c("Choose if you want to plot the phenotypic trait between genotypes or environments."),
                                            size = "m"),
                               textInput("axisx_int", "X-axis label:", value = "Environment"),
                               textInput("axisy_int", "Y-axis label:", value = "Yield"),
@@ -253,7 +253,7 @@ ui <- navbarPage(
                               textInput("Filename_int", "File name", value = "Interaction plot")%>%
                                 helper(type = "inline",
                                        title = "Inline Help",
-                                       content = c("a <b>.HTML</b> file will be download"),
+                                       content = c("An <b>.html</b> file will be downloaded."),
                                        size = "m"),
                               downloadButton("download_int", "Download"),
                               width=3),
@@ -336,8 +336,8 @@ ui <- navbarPage(
                        label = "Segment color",
                        choices = c("dimgrey", "red", "black")
                       ),
-                      selectInput("sizeGen", "Size Gen marker:", choices = c(4,0,1,2,3,5,6,7,8,9,10)),
-                      selectInput("sizeEnv", "Size Env marker:", choices = c(4,0,1,2,3,5,6,7,8,9,10)),
+                      selectInput("sizeGen", "Genotype marker size:", choices = c(4,0,1,2,3,5,6,7,8,9,10)),
+                      selectInput("sizeEnv", "Environment marker size:", choices = c(4,0,1,2,3,5,6,7,8,9,10)),
                      actionButton("do_GGE", "Run"), br(), br(),
 
                     br(), br(),
@@ -396,8 +396,8 @@ ui <- navbarPage(
                        label = "Environment color",
                        choices = c("dimgrey", "red", "black")
                    ),
-               selectInput("sizeGen_AMMI", "Size Gen marker:", choices = c(4,0,1,2,3,5,6,7,8,9,10)),
-               selectInput("sizeEnv_AMMI", "Size Env marker:", choices = c(4,0,1,2,3,5,6,7,8,9,10)),
+               selectInput("sizeGen_AMMI", "Genotype marker size:", choices = c(4,0,1,2,3,5,6,7,8,9,10)),
+               selectInput("sizeEnv_AMMI", "Environment marker size:", choices = c(4,0,1,2,3,5,6,7,8,9,10)),
                actionButton("do_AMMI", "Run"), br(), br(),
                textInput("Filename_AMMI", "File name", value = "AMMI Biplot"),
                downloadButton("download_ammi", "Download"),
@@ -457,18 +457,10 @@ ui <- navbarPage(
                                     `geneticae` offers a wide variety of options to customize the biplots, which are
                                     part of the graphical output of these methods.",
                                     align = "justify"),
-                            tags$p("However, R has a complex syntax and therefore is not friendly for those who do
-                                    not know R programming language. Frequently, breeders use programs with graphical
-                                    user interface to perform statistical analysis, but not all of them allow all
-                                    the analyzes of interest to be carried out and therefore, several of them must
-                                    be used to fulfill an objective. To reduce this disadvantage, geneticae package
-                                    can be used through Shiny app, making it available not only for R programmers,
-                                    removing the obstacle of R programming language complexity.",
-                                   align = "justify"),
-                            tags$p("Geneticae APP is a statistical Shiny Web APP for phenotypic analyses in plant
-                                    breeding context, developed by Julia Angelini, Marcos Prunello and Gerardo Cervigni.
-                                    Is an interactive, noncommercial and open source software, offering a free alternative
-                                    to available commercial software to analize METs.",
+                            tags$p("The goal of the Geneticae Shiny Web APP is to provide a graphical user interface
+                                   for the R package, so that it can be used by breeders and analysts with no previous
+                                   experience in R programming. It is an interactive, noncommercial and open source
+                                   software, offering a free alternative to available commercial software to analize METs.",
                                    align = "justify")
                         ),
                         tags$br(),
@@ -532,14 +524,14 @@ ui <- navbarPage(
              ),
              tabPanel("How to use the APP",
                     navlistPanel(widths = c(3, 9),
-                          tabPanel("The data",
+                          tabPanel("Data",
                                  mainPanel(
-                                   tags$h4(strong("Preparing data file for Geneticae APP")),
+                                   tags$h4(strong("Preparing a data file for the Geneticae APP")),
                                    tags$div(
-                                       tags$p("Geneticae APP allows data in .csv format, delimited by commas or semiclons and
+                                       tags$p("Geneticae APP uses data in .csv format, delimited by commas or semicolons, with
                                                the columns names in the first row of the file (heading). Data in long format
                                                is required, i.e. each row corresponds to one observation and each column to one
-                                               variable (genotype, environment, repetition (if any) and theobserved phenotype).
+                                               variable (genotype, environment, repetition (if any) and the observed phenotype).
                                                If each genotype has been evaluated more than once at each environment, the phenotypic
                                                mean required by SREG and AMMI model for each combination of genotype and environment
                                                is internally calculated and then the model is estimated. Extra variables that will
@@ -547,7 +539,7 @@ ui <- navbarPage(
                                               align = "justify"),
                                        tags$p("Two datasets are available in the APP:", align = "justify"),
                                        tags$ol(
-                                         tags$li(em("plrv"), " dataset (de Mendiburu, 2020): esistance study to PLRV (Patato Leaf Roll
+                                         tags$li(em("plrv"), " dataset (de Mendiburu, 2020): study about resistance to PLRV (Patato Leaf Roll
                                                  Virus) causing leaf curl. 28 genotypes were experimented at 6 locations in Peru.
                                                  Each clone was evaluated three times in each environment, and yield, plant weight
                                                  and plot were registered.", align = "justify"),
@@ -558,7 +550,7 @@ ui <- navbarPage(
                                                  environment combination was available.",
                                                  align = "justify")
                                        ),
-                                       tags$p("They are available in the tab", em("The data -> Examples dataset"), ", and can be downloaded in
+                                       tags$p("They are available in the tab", em("The data -> Example datasets"), ", and can be downloaded in
                                               .cvs format (Figure 2). The ", em("yanwinterwheat"), "dataset will be used to illustrate the methodology
                                               included in Geneticae APP to analyse MET data.",
                                               align = "justify")
@@ -572,10 +564,10 @@ ui <- navbarPage(
                                    tags$div(
                                      tags$h4(strong("Loading a dataset into the APP")),
                                      tags$p("The dataset to be analyzed must be loaded in the ", em (" Data -> User data "), "tab.
-                                            For example, to import the ",em("yanwinterwheat"), "dataset, the .csv file must be upload and
-                                            indicate that it is delimited by coma, that the first row contains the names of
-                                            each variable (header) as well as the column name with genotype, environments and
-                                            phenotypic trait information which are gen, env and yield in this case (Figure 3).
+                                            For example, to import the ",em("yanwinterwheat"), "dataset, the .csv file must be uploaded,
+                                            indicating that it is delimited by comma, that the first row contains the names of
+                                            each variable (header) and also the column names for genotype, environment and
+                                            phenotypic trait information (gen, env and yield in this case, see Figure 3).
                                             If repetitions are available, specify the name of that column, otherwise, do not
                                             indicate anything.",
                                             align = "justify"),
@@ -591,16 +583,16 @@ ui <- navbarPage(
                           tabPanel("Descriptive analysis",
                                  mainPanel(
                                    tags$h4(strong("Descriptive analysis of the dataset")),
-                                   tags$p("Any study should start with a descriptive analysis of the dataset, the", em ("Descriptive Analysis"),
-                                          "tab provides some tools for that first step. In this menu, boxplot, correlation plot and matrix
-                                          and interaction plot may be obtained.",
+                                   tags$p("Any study should start with a descriptive analysis of the dataset. The", em ("Descriptive Analysis"),
+                                          "tab provides some tools for this. Boxplots, correlation plots and matrix
+                                          and interaction plots may be obtained.",
                                           align = "justify"),
-                                   tags$p("Boxplot that compares the quantitative trait across environments (Figure 4) or
-                                          across genotypes (Figure 5) may be one of the plot of interest. The summary measures used
-                                          for its construction are shown interactively by moving the mouse within it.
-                                          In addition, it can be downloaded in the interactive format (.HTML) as well as in .png
-                                          format by clicking on the Download button and on the camera that appears in the graphic,
-                                          respectively (Figures 4). Some aspects of the graph can be customize by the user,
+                                   tags$p("A boxplot comparing the quantitative trait across environments (Figure 4) or
+                                          across genotypes (Figure 5) may be one of the plots of interest. The summary measures used
+                                          for its construction are shown interactively by moving the mouse within the figure panel.
+                                          In addition, it can be downloaded as an interactive file (.html) as well as a .png file,
+                                          by clicking on the Download button or on the camera that appears in the figure,
+                                          respectively (Figure 4). Some aspects of the graph can be customized by the user,
                                           such as box color and axes names.",
                                           align = "justify"),
                                    br(),
@@ -611,10 +603,10 @@ ui <- navbarPage(
                                     align="center"),
                                    br(),
                                    br(),
-                                   tags$p("Pearson or Spearman correlation between genotypes can be displayed as a graph
-                                          or a matrix (Figures 5). Positive correlations are shown in blue and negative in red,
+                                   tags$p("Pearson or Spearman correlation coefficients between genotypes can be shown as a plot
+                                          or a matrix (Figures 5). Positive correlations are shown in blue and negative in red, while
                                           the intensity of the color and the size of the circle are proportional to the correlation
-                                          coefficients. The correlation plot can be download in .png format. High correlation are
+                                          coefficients. The correlation plot can be downloaded in .png format. High correlations are
                                           observed between the yield of the genotypes studied.",
                                           align = "justify"),
                                    br(),
@@ -628,13 +620,13 @@ ui <- navbarPage(
                                    br(),
                                    br(),
                                    tags$p("Since GEI generates differential genotypic responses in different environments, which
-                                          complicates the task of selecting superior cultivars, an interaction plot may be of interest.
+                                          complicates the task of selecting the best cultivars, an interaction plot may be of interest.
                                           The change in genotypic effect across environments are shown in Figure 6-A, while the change
-                                          in the environmental effect through genotypes in Figure 6-B. As the boxplot, it is a interactive
-                                          graph, and therefore, it is possible to download in interactive (.HTML) as well as in .png
-                                          format from the Download button and when clicking on the camera, respectively. Additionally,
-                                          the axes names can be customized by the user. In this example inconsistencies in the performance
-                                          of genotypes in the different environments.",
+                                          in the environmental effect through genotypes in Figure 6-B. It is also an interactive
+                                          plot, and therefore, it is possible to download it in .HTML or .png
+                                          formats with the Download button or clicking on the camera, respectively. Additionally,
+                                          axes names can be customized by the user. In this example inconsistencies in the performance
+                                          of genotypes in different environments can be seen.",
                                           align = "justify"),
                                    br(),
                                    tags$div(
@@ -667,7 +659,8 @@ ui <- navbarPage(
                                            for each combination of genotype and environment, if there are repetitions, the phenotypic average
                                            value is automatically calculated before fitting the model. Missing values are not allowed.",
                                           align = "justify"),
-                                   tags$p("The SVD method must be selected, however, does not alter the relationships or relative interactions
+                                   tags$p("The SVD method must be selected, however, this choice does not alter the relationships or
+                                           relative interactions
                                            between genotypes and environments, although the appearance of the biplot will be different (Yan, 2002).
                                           A footnote indicating that the centering method is tester-center to obtain GGE bioplot, no scaling
                                           is applied to the data, SVD method selected by the user and the the percentage of G + GEI variation
@@ -771,8 +764,8 @@ ui <- navbarPage(
                                           idea of their performance (yield and stability).",
                                           align = "justify"),
                                    br(),
-                                   tags$p(" In the GGE biplot it is also possible to visualize mean yield and stability of genotypes in yield units per se
-                                          (Figure 12 and 13). The GGE biplot based on genotype-focused scaling, obtained indicating the option row in SVP,
+                                   tags$p("In the GGE biplot it is also possible to visualize mean yield and stability of genotypes in yield units per se
+                                          (Figures 12 and 13). The GGE biplot based on genotype-focused scaling, obtained indicating the option row in SVP,
                                           provides an useful way to visualize both mean performance and stability of the tested genotypes. This is because
                                           the unit of both axes for the genotypes is the original unit of the data.",
                                           align = "justify"),
@@ -788,7 +781,7 @@ ui <- navbarPage(
                                    br(),
                                    tags$div(
                                      tags$h5(strong("Figure 12:"),"average environment view of the GGE biplot based on genotype-focused scaling, showing mean
-                                             yield and stability of genotypes. Cultivars are shown in lowercase and environments in uppercase. "),
+                                             yield and stability of genotypes. Cultivars are shown in lowercase and environments in uppercase."),
                                      align="center"),
                                    br(),
                                    tags$p("Figure 13 compares the cultivars to the “ideal” one with the highest yield and absolute stability.
@@ -828,7 +821,7 @@ ui <- navbarPage(
                                      tags$h5(strong("Figure 14:")," Relationship between environments. Environment-focused scaling is used. "),
                                      align="center"),
                                    br(),
-                                   tags$p(" Discrimination ability as well as representativeness with respect to the target environment are
+                                   tags$p("Discrimination ability as well as representativeness with respect to the target environment are
                                           fundamental measures for an environment. An ideal test environment should be both discriminating and
                                           representative. If it does not have the ability to discriminate, it does not provide information on
                                           cultivars and is therefore of no use. At the same time, if it is not representative, not only does it
@@ -877,7 +870,7 @@ ui <- navbarPage(
                                           align = "justify"),
 
 
-                                  tags$p(" The GE biplot obtained using AMMI clasic for yan.winterwheat dataset is obtain by default (Figure 16).
+                                  tags$p("The GE biplot obtained using AMMI clasic for yan.winterwheat dataset is obtain by default (Figure 16).
                                           In this example, BH93, KE93 and OA93 are the environments that contributethe most to the
                                           interaction as their vectors are the longest ones. The cultivars m12 and Kat present similar
                                           interaction patterns (their markers are close to each other in the biplot) and they are very
@@ -897,7 +890,7 @@ ui <- navbarPage(
                                    br(),
                                    br(), br(),
                                    h4(strong("Robust AMMI models")),
-                                   tags$p(" The AMMI model, in its standard form, assumes that no outliers are present in the data. To overcome the problem
+                                   tags$p("The AMMI model, in its standard form, assumes that no outliers are present in the data. To overcome the problem
                                          of data contamination with outlying observations, Rodrigues et al. (2016) proposed five robust AMMI models, which
                                          can be obtained in two stages: (i) fitting a robust regression model with an M-Huber estimator (Huber, 1981) to
                                          replace the ANOVA model; and (ii) using a robust SVD or principal components analysis (PCA) procedure to replace
@@ -926,9 +919,7 @@ ui <- navbarPage(
              tabPanel("Video-Tutorial",
                       mainPanel(
                         tags$div(
-                        tags$h4(strong("Video Tutorial of Geneticae Shiny APP")),
-                        tags$p("This section presents a video tutorial on how to use Geneticae shiny app.",
-                               align = "justify"),
+                        tags$h4(strong("Tutorial video: how to use the Geneticae Shiny APP")),
                         HTML('<iframe width="800" height="400" src="https://www.youtube.com/embed/WAODnJDIZ-s" frameborder="0" allowfullscreen></iframe>'),
                         style="text-align: center;")
                       )
