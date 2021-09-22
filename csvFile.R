@@ -9,7 +9,7 @@ csvFileInput <- function(id, label = "CSV file") {
     checkboxInput(ns("heading"), "Has heading"),
     selectInput(ns("sep"), "Separation", c(
       "None" = "",
-      "Coma" = ",",
+      "Comma" = ",",
       "Semicolon" = ";"
     ))
   )
