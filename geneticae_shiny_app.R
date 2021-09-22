@@ -1188,11 +1188,13 @@ output$download_box <- downloadHandler(
 
 # Correlation plot
 corrInput <- reactive({
+
   if(input$Var2 == "Environment"){
-    M_graf <- cor(sinrep(), method =input$corrType)
+    M_graf <- cor(sinrep(), method = tolower(input$corrType))
   }else{
-    M_graf <- cor(t(sinrep()), method =input$corrType)
+    M_graf <- cor(t(sinrep()), method = tolower(input$corrType))
   }
+
 })
 
 corplotInput <- eventReactive( input$do_corrplot, {
@@ -1242,16 +1244,19 @@ cormatInput <- eventReactive( input$do_corrmat, {
                  }
                })
   if(input$Var3 == "Environment"){
-    M <- cor(sinrep(), method = input$correlType)
+
+    M <- cor(sinrep(), method = tolower(input$correlType))
   }else{
-    M <- cor(t(sinrep()), method = input$correlType)
+    M <- cor(t(sinrep()), method = tolower(input$correlType))
   }
 
-  knitr::kable(M,"html", digits = 2,full_width = F, font_size = 12) %>%
+    knitr::kable(M,"html", digits = 2,full_width = F, font_size = 12) %>%
     kable_styling(position = "center")  %>%
     column_spec(1:ncol(M), bold = T, color = "black") %>%
     row_spec(1:nrow(M), bold = T, color = "black")
 })
+
+
 
 output$cormat<-renderText({
 print(cormatInput())
