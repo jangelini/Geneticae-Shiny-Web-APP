@@ -85,7 +85,7 @@ ui <- navbarPage(
                 # Import a dataset
                  tabPanel("Upload data", icon = icon("table"),
                           sidebarPanel(
-                                csvFileInput("datafile", "User data (.csv format)"), br(),
+                                csvFileInput("datafile", "Upload data (.csv format)"), br(),
                                 tags$p("Select the column name that contains:"),
                                 uiOutput("select_gen"),
                                 uiOutput("select_env"),
@@ -95,6 +95,7 @@ ui <- navbarPage(
                                 ),
                           mainPanel(dataTableOutput("table"), width=8)
                         ),
+
                  # Examples dataset
                  tabPanel(strong("Example datasets"), icon = icon("table"),
                           sidebarPanel(br(),
@@ -269,11 +270,17 @@ ui <- navbarPage(
                   prettyRadioButtons(
                     inputId = "SVP",
                     label = "SVP type",
-                    choices = c("symmetrical","row", "column"),
+                    choices = c("Symmetrical","Genotype-focused", "Environment-focused"),
                     icon = icon("check"),
                     status = "info",
                     animation = "rotate"
-                  ),
+                  )%>%
+                    helper(type = "inline",
+                           title = "Inline Help",
+                           content = c("The SVD method must be selected, however, this choice does not alter the relationships or relative interactions between genotypes and environments, although the appearance of the biplot will be different.
+                                       Symmetrical option allows comparison for both genotypes and environments; Genotype-Focused displays the interrelationship among genotypes more accurately than any other method does, and
+                                       Environment-focused is most informative of interrelationships among environments."),
+                           size = "m"),
                   prettyRadioButtons(
                          inputId = "plotType",
                          label = "Plot type",
@@ -289,12 +296,26 @@ ui <- navbarPage(
                          icon = icon("check"),
                          status = "info",
                          animation = "rotate"
-                     ),
+                     )%>%
+                    helper(type = "inline",
+                           title = "Inline Help",
+                           content = c("Several GGE biplots views can be obtained: basic biplot, Selected Environment to identify the most suitable cultivars for a particular environment of interest,
+                                       Selected Genotype to determine which is the most suitable environment for a genotype; Comparison of Genotype to compare two cultivars;
+                                       Which Won Where/What allow the identification of the best cultivar in each environment or mega-environment;
+                                       Mean vs. Stability to visualize mean yield and stability of genotypes in yield units per se;
+                                       Ranking Genotypes compares the cultivars to the “ideal” one with the highest yield and absolute stability;
+                                       Relationship Among Environments to understand the interrelationships between the environments and
+                                       Ranking Environments to classify the environments with respect to the ideal one."),
+                           size = "m"),
                   # Esto solo se muestra si distr_media se elige en Normal:
                   conditionalPanel(condition = 'input.plotType == "Selected Environment"',
                                    pickerInput('SelectedE','Environment:',
                                                options = list(`actions-box` = TRUE, size = 10), multiple = FALSE,
-                                               choices = NULL)
+                                               choices = NULL)%>%
+                                     helper(type = "inline",
+                                            title = "Inline Help",
+                                            content = c("Select the environment of interest"),
+                                            size = "m")
                                    ),
                   conditionalPanel(condition = 'input.plotType == "Mean vs. Stability" ||
                                                 input.plotType == "Ranking Genotypes"  ||
@@ -302,18 +323,30 @@ ui <- navbarPage(
                                                 input.plotType == "Ranking Environments"',
                                    pickerInput('ME','Environments inside the mega-environment:',
                                                options = list(`actions-box` = TRUE, size = 10), multiple = TRUE,
-                                               choices = NULL)
+                                               choices = NULL)%>%
+                                     helper(type = "inline",
+                                            title = "Inline Help",
+                                            content = c("Select the environments inside the mega-environment to analyze"),
+                                            size = "m")
                                   ),
                   conditionalPanel(condition = 'input.plotType == "Selected Genotype"',
                                    pickerInput('SelectedG','Genotype:',
                                                options = list(`actions-box` = TRUE, size = 10), multiple = FALSE,
-                                               choices = NULL)
+                                               choices = NULL)%>%
+                                     helper(type = "inline",
+                                            title = "Inline Help",
+                                            content = c("Select the genotype of interest"),
+                                            size = "m")
                                   ),
 
                   conditionalPanel(condition = 'input.plotType == "Comparison of Genotype"',
                                    pickerInput('SelectedG1','Genotype 1:',
                                                options = list(`actions-box` = TRUE, size = 10), multiple = FALSE,
-                                               choices = NULL),
+                                               choices = NULL)%>%
+                                     helper(type = "inline",
+                                            title = "Inline Help",
+                                            content = c("Select the genotypes to be compared"),
+                                            size = "m"),
                                    pickerInput('SelectedG2','Genotype 2',
                                                options = list(`actions-box` = TRUE, size = 10), multiple = FALSE,
                                                choices = NULL)
@@ -694,6 +727,9 @@ ui <- navbarPage(
                                    tags$p("The SVD method must be selected, however, this choice does not alter the relationships or
                                            relative interactions
                                            between genotypes and environments, although the appearance of the biplot will be different (Yan, 2002).
+                                           Symmetrical option allows comparison for both genotypes and environments; Genotype-Focused displays
+                                           the interrelationship among genotypes more accurately than any other method does, and Environment-focused
+                                           is most informative of interrelationships among environments.
                                           A footnote indicating that the centering method is tester-center to obtain GGE bioplot, no scaling
                                           is applied to the data, SVD method selected by the user and the the percentage of G + GEI variation
                                           explained by the two axes can be added. The title graph, axes and axis names can be configure to
@@ -1348,12 +1384,28 @@ observe({updatePickerInput(session, 'SelectedG2', choices = choices_G2())})
 modelInput <- reactive({
 
   if(input$plotType %in% c("Mean vs. Stability","Ranking Genotypes","Relationship Among Environments","Ranking Environments")){
+    if(input$SVP=="Genotype-focused"){
+      geneticae::GGEmodel(datafile_ME(), genotype = input$select_gen, environment = input$select_env, rep = input$select_rep, response = input$select_pheno,
+                          SVP = "row", centering = "tester", scaling = "none")
+    } else if(input$SVP=="Environment-focused"){
+      geneticae::GGEmodel(datafile_ME(), genotype = input$select_gen, environment = input$select_env, rep = input$select_rep, response = input$select_pheno,
+                          SVP = "column", centering = "tester", scaling = "none")
+    }else{
+      geneticae::GGEmodel(datafile_ME(), genotype = input$select_gen, environment = input$select_env, rep = input$select_rep, response = input$select_pheno,
+                          SVP = "symmetrical", centering = "tester", scaling = "none")
+    }
 
-    geneticae::GGEmodel(datafile_ME(), genotype = input$select_gen, environment = input$select_env, rep = input$select_rep, response = input$select_pheno,
-                        SVP = input$SVP, centering = "tester", scaling = "none")
   }else{
-    geneticae::GGEmodel(datafile(), genotype = input$select_gen, environment = input$select_env, rep = input$select_rep, response = input$select_pheno,
-                        SVP = input$SVP, centering = "tester", scaling = "none")
+    if(input$SVP=="Genotype-focused"){
+      geneticae::GGEmodel(datafile(), genotype = input$select_gen, environment = input$select_env, rep = input$select_rep, response = input$select_pheno,
+                          SVP = "row", centering = "tester", scaling = "none")
+    } else if(input$SVP=="Environment-focused"){
+      geneticae::GGEmodel(datafile(), genotype = input$select_gen, environment = input$select_env, rep = input$select_rep, response = input$select_pheno,
+                          SVP = "column", centering = "tester", scaling = "none")
+    }else{
+      geneticae::GGEmodel(datafile(), genotype = input$select_gen, environment = input$select_env, rep = input$select_rep, response = input$select_pheno,
+                          SVP = "symmetrical", centering = "tester", scaling = "none")
+    }
   }
 })
 
