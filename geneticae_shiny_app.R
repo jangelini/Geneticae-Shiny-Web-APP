@@ -99,8 +99,8 @@ ui <- navbarPage(
                  tabPanel(strong("Example datasets"), icon = icon("table"),
                           sidebarPanel(br(),
                                 prettyRadioButtons(
-                                   inputId = "example_dataset",
-                                   label = "Data example",
+                                   inputId = "exampledataset",
+                                   label = "Example data",
                                    choices = c("without repetitions", "with repetitions"),
                                    icon = icon("check"),
                                    status = "info",
@@ -1037,7 +1037,7 @@ example_withrep <- reactive({
 # Show example dataset
 exampleInput <- eventReactive(input$show_exampledataset, {
 
-    if(input$example_dataset == "without repetitions"){
+    if(input$exampledataset == "without repetitions"){
       data_example <- example_withoutrep()
     }else{
       data_example <- example_withrep()
