@@ -10,7 +10,6 @@
 #-----------
 # Paquetes
 #-----------
-
 rm(list=ls(all=TRUE))
 library(shiny)
 library(ggplot2)
@@ -876,11 +875,11 @@ ui <- navbarPage(
                                           align = "justify"),
                                    br(),
                                    tags$p("In Figure 14 environments are connected to the origin through vectors, allowing us to understand the
-                                          interrelationships between. The coefficient of correlation between two environments it is approximated
+                                          interrelationships between them. The coefficient of correlation between two environments it is approximated
                                           by the cosine of the angle formed by the respective vectors. In this example the relation between the
                                           environments for the mega-environment with BH93, EA93, HW93, ID93, NN93, RN93 and WP93 is considered.
                                           The angle between the vectors for the environments NN93 and WP93 is approximately 10º; therefore, they
-                                          are closely related; while RN93 and OA93 present a weak negative correlation since the angle is slightly
+                                          are closely related; while RN93 and BH93 present a weak negative correlation since the angle is slightly
                                           greater than 90º. The cosine of the angles does not translate precisely into coefficients of correlation,
                                           since the biplot does not explain all the variability in the dataset. However, they are informative enough
                                           to understand the interrelationship between test environments.",
