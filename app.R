@@ -25,6 +25,7 @@ library(ggthemes)
 library(plotly)
 library(shinyhelper)
 library(tidyr)
+library(agridat)
 
 #---------------------
 # Funciones auxiliares

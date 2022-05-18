@@ -5,7 +5,7 @@ account: geneticae
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4725258
-bundleId: 5174326
+bundleId: 5921098
 url: https://geneticae.shinyapps.io/geneticae-shiny-web-app/
-when: 1635164259.7398
-lastSyncTime: 1635164259.7399
+when: 1652914598.58718
+lastSyncTime: 1652914598.58725
