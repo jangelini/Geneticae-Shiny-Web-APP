@@ -583,7 +583,7 @@ ui <- navbarPage(
                                       icon = icon("envelope",
                                                    lib = "font-awesome")
                                        ),
-                          href="mailto: jangelini_93@hotmail.com.com"),
+                          href="mailto: jangelini_93@hotmail.com"),
                        width = 11),
                       br(),br()
              ),
